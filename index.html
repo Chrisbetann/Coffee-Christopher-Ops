@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Valentine's Day Special</title>
+    <style>
+        /* ============================================================
+           CUSTOMIZE: Change colors, fonts, etc. here
+           ============================================================ */
+        :root {
+            --bg-dark: #1a0008;
+            --bg-mid: #4a0020;
+            --accent-pink: #ff4d8d;
+            --accent-red: #e6193c;
+            --accent-gold: #ffd700;
+            --accent-gold-dark: #b8960c;
+            --text-light: #fff5f5;
+            --text-white: #ffffff;
+            --shadow-glow: 0 0 30px rgba(255, 77, 141, 0.4);
+        }
+
+        /* ============================================================
+           BASE STYLES
+           ============================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, var(--bg-dark), var(--bg-mid), var(--bg-dark));
+            color: var(--text-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ============================================================
+           FLOATING HEARTS BACKGROUND
+           ============================================================ */
+        .hearts-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            font-size: 20px;
+            opacity: 0;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
+            5%   { opacity: 0.15; }
+            50%  { opacity: 0.25; }
+            95%  { opacity: 0.1; }
+            100% { transform: translateY(-110vh) rotate(360deg) scale(0.5); opacity: 0; }
+        }
+
+        /* ============================================================
+           SCREEN SYSTEM
+           ============================================================ */
+        .screen {
+            display: none;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 30px 20px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn {
+            padding: 16px 40px;
+            border: none;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-red));
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 77, 141, 0.5);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 30px rgba(255, 77, 141, 0.7);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dark));
+            color: #1a0008;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-white);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent-pink);
+            color: var(--accent-pink);
+        }
+
+        .btn-no {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 30px;
+            font-size: 0.9rem;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+
+        /* ============================================================
+           SCREEN 1: PHOTO SLIDESHOW INTRO
+           ============================================================ */
+        .slideshow-container {
+            width: min(90vw, 500px);
+            height: min(70vh, 600px);
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-glow);
+            border: 3px solid rgba(255, 77, 141, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .slide.active-slide {
+            opacity: 1;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slide-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .slide-placeholder .heart-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .slide-counter {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .dot.active-dot {
+            background: var(--accent-pink);
+            transform: scale(1.3);
+        }
+
+        .intro-title {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .intro-subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        /* ============================================================
+           SCREEN 2: BE MY VALENTINE
+           ============================================================ */
+        .valentine-heart {
+            font-size: 6rem;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            15%      { transform: scale(1.15); }
+            30%      { transform: scale(1); }
+            45%      { transform: scale(1.1); }
+        }
+
+        .valentine-question {
+            font-size: clamp(1.8rem, 6vw, 3rem);
+            text-align: center;
+            margin-bottom: 40px;
+            line-height: 1.4;
+            text-shadow: 0 0 20px rgba(255, 77, 141, 0.5);
+        }
+
+        .valentine-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            min-height: 80px;
+            position: relative;
+        }
+
+        /* ============================================================
+           SCREEN 3: TOO BAD
+           ============================================================ */
+        .too-bad-emoji {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25%      { transform: rotate(-10deg); }
+            75%      { transform: rotate(10deg); }
+        }
+
+        .too-bad-text {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--accent-pink);
+        }
+
+        .too-bad-sub {
+            font-size: 1.1rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        /* ============================================================
+           SCREEN 4: CASE SELECTION
+           ============================================================ */
+        .game-title {
+            font-size: clamp(1.3rem, 4.5vw, 2.2rem);
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-gold), #fff, var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Restaurant board */
+        .restaurant-board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 35px;
+            width: min(90vw, 500px);
+        }
+
+        .board-item {
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            text-align: center;
+            font-size: 0.95rem;
+            transition: all 0.5s ease;
+        }
+
+        .board-item.eliminated {
+            opacity: 0.25;
+            text-decoration: line-through;
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(100, 100, 100, 0.1);
+        }
+
+        .board-item .board-emoji {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Briefcases */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: min(90vw, 400px);
+            margin-bottom: 20px;
+        }
+
+        .briefcase {
+            aspect-ratio: 1;
+            border-radius: 16px;
+            background: linear-gradient(145deg, #c9a800, var(--accent-gold), #e6c200);
+            border: 3px solid var(--accent-gold-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .briefcase::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: var(--accent-gold-dark);
+            border-radius: 2px;
+        }
+
+        .briefcase::after {
+            content: '';
+            position: absolute;
+            top: calc(50% - 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 16px;
+            border: 3px solid var(--accent-gold-dark);
+            border-radius: 3px;
+            background: linear-gradient(to bottom, #e6c200, #c9a800);
+        }
+
+        .briefcase:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .briefcase:active {
+            transform: scale(0.95);
+        }
+
+        .case-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--bg-dark);
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
+            margin-bottom: 20px;
+        }
+
+        .briefcase.selected {
+            background: linear-gradient(145deg, var(--accent-pink), var(--accent-red));
+            border-color: #c0153a;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .briefcase.selected::before {
+            background: #c0153a;
+        }
+
+        .briefcase.selected::after {
+            border-color: #c0153a;
+            background: linear-gradient(to bottom, var(--accent-red), #c0153a);
+        }
+
+        .briefcase.selected .case-number {
+            color: white;
+        }
+
+        .briefcase.opened {
+            background: linear-gradient(145deg, #333, #555);
+            border-color: #444;
+            cursor: default;
+            opacity: 0.5;
+        }
+
+        .briefcase.opened::before { background: #444; }
+        .briefcase.opened::after { border-color: #444; background: #444; }
+
+        .briefcase.opened .case-number {
+            color: #888;
+        }
+
+        .briefcase.opened .case-reveal {
+            display: flex;
+        }
+
+        .case-reveal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 13px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .case-reveal .reveal-emoji {
+            font-size: 2rem;
+        }
+
+        .case-reveal .reveal-name {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 5px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 77, 141, 0.3); }
+            50%      { box-shadow: 0 0 25px rgba(255, 77, 141, 0.6); }
+        }
+
+        .your-case-label {
+            font-size: 0.85rem;
+            color: var(--accent-pink);
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        /* ============================================================
+           SCREEN 5: GAME PLAY
+           ============================================================ */
+        .game-instruction {
+            font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--accent-gold);
+        }
+
+        .your-case-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(255, 77, 141, 0.1);
+            border: 1px solid rgba(255, 77, 141, 0.3);
+        }
+
+        .your-case-display .mini-case {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: linear-gradient(145deg, var(--accent-pink), var(--accent-red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .your-case-display span {
+            font-size: 0.85rem;
+            color: var(--accent-pink);
+        }
+
+        /* ============================================================
+           SCREEN 6: DEAL OFFER
+           ============================================================ */
+        .banker-section {
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .phone-ring {
+            font-size: 4rem;
+            animation: ring 0.5s ease-in-out infinite alternate;
+            margin-bottom: 20px;
+        }
+
+        @keyframes ring {
+            from { transform: rotate(-15deg); }
+            to   { transform: rotate(15deg); }
+        }
+
+        .banker-title {
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+        }
+
+        .deal-offer-card {
+            background: rgba(255, 215, 0, 0.08);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .deal-offer-card .deal-emoji {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .deal-offer-card .deal-name {
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+        }
+
+        .deal-offer-card .deal-tagline {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
+
+        .deal-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* ============================================================
+           SCREEN 7: FINAL CHOICE (KEEP OR SWAP)
+           ============================================================ */
+        .final-choice-title {
+            font-size: clamp(1.3rem, 4vw, 2rem);
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--accent-gold);
+        }
+
+        .final-cases {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .final-case-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .final-case-option .briefcase {
+            width: 120px;
+            height: 120px;
+        }
+
+        .final-case-option .case-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .swap-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* ============================================================
+           SCREEN 8: FINAL REVEAL
+           ============================================================ */
+        .reveal-container {
+            text-align: center;
+            animation: revealBounce 0.8s ease-out;
+        }
+
+        @keyframes revealBounce {
+            0%   { opacity: 0; transform: scale(0.3); }
+            50%  { transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .reveal-overline {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+
+        .reveal-restaurant-emoji {
+            font-size: 5rem;
+            margin-bottom: 15px;
+        }
+
+        .reveal-restaurant-name {
+            font-size: clamp(2rem, 7vw, 3.5rem);
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--accent-gold), #fff, var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .reveal-restaurant-desc {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+            margin-bottom: 30px;
+            max-width: 400px;
+        }
+
+        .reveal-message {
+            font-size: 1.3rem;
+            color: var(--accent-pink);
+            margin-bottom: 30px;
+        }
+
+        .play-again-btn {
+            margin-top: 20px;
+        }
+
+        /* ============================================================
+           CONFETTI
+           ============================================================ */
+        .confetti-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            top: -20px;
+            width: 10px;
+            height: 10px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* ============================================================
+           CASE OPEN ANIMATION OVERLAY
+           ============================================================ */
+        .case-open-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .case-open-overlay.visible {
+            display: flex;
+        }
+
+        .case-open-overlay .open-case-number {
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+        }
+
+        .case-open-overlay .open-emoji {
+            font-size: 5rem;
+            animation: revealBounce 0.6s ease-out;
+        }
+
+        .case-open-overlay .open-name {
+            font-size: 2rem;
+            margin-top: 15px;
+            color: var(--text-white);
+        }
+
+        .case-open-overlay .open-dismiss {
+            margin-top: 30px;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 480px) {
+            .cases-grid { gap: 12px; }
+            .briefcase .case-number { font-size: 2rem; }
+            .btn { padding: 14px 30px; font-size: 1rem; }
+            .deal-buttons { flex-direction: column; align-items: center; }
+            .swap-buttons { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ============================================================
+         FLOATING HEARTS BACKGROUND
+         ============================================================ -->
+    <div class="hearts-bg" id="heartsBg"></div>
+
+    <!-- ============================================================
+         SCREEN 1: PHOTO SLIDESHOW INTRO
+         ============================================================ -->
+    <div class="screen active" id="introScreen">
+        <div class="intro-title">Our Story</div>
+        <div class="intro-subtitle">A few of my favorite moments with you</div>
+
+        <div class="slideshow-container" id="slideshow">
+            <!-- Slides are generated by JavaScript from the CONFIG below -->
+        </div>
+
+        <div class="slide-counter" id="slideCounter"></div>
+
+        <button class="btn btn-primary" onclick="goToScreen('valentineScreen')">
+            Continue
+        </button>
+    </div>
+
+    <!-- ============================================================
+         SCREEN 2: BE MY VALENTINE?
+         ============================================================ -->
+    <div class="screen" id="valentineScreen">
+        <div class="valentine-heart" id="bigHeart">&#10084;&#65039;</div>
+        <div class="valentine-question">
+            Will You Be<br>My Valentine?
+        </div>
+        <div class="valentine-buttons" id="valentineButtons">
+            <button class="btn btn-primary" onclick="sayYes()">
+                Yes!
+            </button>
+            <button class="btn btn-no" id="noBtn" onclick="sayNo()" onmouseover="dodgeNo(event)">
+                No
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         SCREEN 3: TOO BAD
+         ============================================================ -->
+    <div class="screen" id="tooBadScreen">
+        <div class="too-bad-emoji">&#128536;</div>
+        <div class="too-bad-text">Too Bad!</div>
+        <div class="too-bad-sub">That was never really an option...</div>
+        <button class="btn btn-primary" onclick="sayYes()">
+            Fine... YES!
+        </button>
+    </div>
+
+    <!-- ============================================================
+         SCREEN 4: CASE SELECTION
+         ============================================================ -->
+    <div class="screen" id="caseSelectScreen">
+        <div class="game-title">Valentine's Deal or No Deal</div>
+        <div class="game-subtitle">Tonight's dinner possibilities:</div>
+
+        <div class="restaurant-board" id="restaurantBoard">
+            <!-- Generated by JS -->
+        </div>
+
+        <div class="game-instruction">Pick your case!</div>
+
+        <div class="cases-grid" id="caseSelectGrid">
+            <!-- Generated by JS -->
+        </div>
+    </div>
+
+    <!-- ============================================================
+         SCREEN 5: GAME ROUNDS
+         ============================================================ -->
+    <div class="screen" id="gameScreen">
+        <div class="game-title">Valentine's Deal or No Deal</div>
+
+        <div class="your-case-display" id="yourCaseDisplay">
+            <div class="mini-case" id="yourCaseNum"></div>
+            <span>Your Case</span>
+        </div>
+
+        <div class="restaurant-board" id="gameBoardDisplay">
+            <!-- Generated by JS -->
+        </div>
+
+        <div class="game-instruction" id="gameInstruction">Pick a case to open!</div>
+
+        <div class="cases-grid" id="gameCasesGrid">
+            <!-- Generated by JS -->
+        </div>
+    </div>
+
+    <!-- ============================================================
+         CASE OPEN OVERLAY
+         ============================================================ -->
+    <div class="case-open-overlay" id="caseOpenOverlay">
+        <div class="open-case-number" id="openCaseNumber"></div>
+        <div class="open-emoji" id="openEmoji"></div>
+        <div class="open-name" id="openName"></div>
+        <button class="btn btn-gold open-dismiss" onclick="dismissCaseReveal()">Continue</button>
+    </div>
+
+    <!-- ============================================================
+         SCREEN 6: DEAL OFFER
+         ============================================================ -->
+    <div class="screen" id="dealScreen">
+        <div class="banker-section">
+            <div class="phone-ring" id="phoneIcon">&#128222;</div>
+            <div class="banker-title">The Banker is calling...</div>
+            <div class="deal-offer-card">
+                <div class="deal-emoji" id="dealEmoji"></div>
+                <div class="deal-name" id="dealName"></div>
+                <div class="deal-tagline" id="dealTagline"></div>
+            </div>
+            <div class="deal-buttons">
+                <button class="btn btn-gold" onclick="acceptDeal()">Deal!</button>
+                <button class="btn btn-primary" onclick="noDeal()">No Deal!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         SCREEN 7: FINAL CHOICE — KEEP OR SWAP
+         ============================================================ -->
+    <div class="screen" id="finalChoiceScreen">
+        <div class="game-title">Final Decision!</div>
+        <div class="final-choice-title">Keep your case or swap?</div>
+
+        <div class="final-cases" id="finalCases">
+            <!-- Generated by JS -->
+        </div>
+
+        <div class="swap-buttons">
+            <button class="btn btn-primary" onclick="finalDecision('keep')">Keep My Case</button>
+            <button class="btn btn-gold" onclick="finalDecision('swap')">Swap!</button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         SCREEN 8: FINAL REVEAL
+         ============================================================ -->
+    <div class="screen" id="revealScreen">
+        <div class="reveal-container">
+            <div class="reveal-overline">Tonight, we're going to...</div>
+            <div class="reveal-restaurant-emoji" id="revealEmoji"></div>
+            <div class="reveal-restaurant-name" id="revealName"></div>
+            <div class="reveal-restaurant-desc" id="revealDesc"></div>
+            <div class="reveal-message">
+                Happy Valentine's Day, my love! &#10084;&#65039;
+            </div>
+            <button class="btn btn-outline play-again-btn" onclick="playAgain()">
+                Play Again
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         CONFETTI CONTAINER
+         ============================================================ -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- ============================================================
+         JAVASCRIPT
+         ============================================================ -->
+    <script>
+    /* =============================================================
+       CONFIGURATION — CUSTOMIZE EVERYTHING HERE!
+       =============================================================
+       photos:       Array of image paths for the intro slideshow.
+                     Put your photos in the "photos/" folder and
+                     list them here. Use at least 2-3 for best effect.
+
+       restaurants:  The 4 premium dinner spots. Change names,
+                     emojis, and descriptions to match your picks.
+
+       jokeDeals:    The funny "banker offers" shown between rounds.
+                     These should be obviously bad so she rejects them.
+
+       messages:     Various text shown throughout the game.
+       ============================================================= */
+    const CONFIG = {
+        photos: [
+            /* Replace these with your actual photo paths, e.g.:
+               "photos/us-at-beach.jpg",
+               "photos/anniversary.jpg",
+               "photos/silly-selfie.jpg",
+            */
+            null,  // placeholder 1 — replace with "photos/your-photo.jpg"
+            null,  // placeholder 2
+            null,  // placeholder 3
+        ],
+
+        photoMessages: [
+            "Every moment with you is my favorite",
+            "You make every day brighter",
+            "My favorite person in the world",
+        ],
+
+        restaurants: [
+            {
+                name: "The Capital Grille",
+                emoji: "\uD83E\uDD69",
+                description: "An upscale steakhouse experience"
+            },
+            {
+                name: "Nobu",
+                emoji: "\uD83C\uDF63",
+                description: "World-class Japanese cuisine"
+            },
+            {
+                name: "Carbone",
+                emoji: "\uD83C\uDF5D",
+                description: "Classic Italian-American fine dining"
+            },
+            {
+                name: "STK",
+                emoji: "\uD83E\uDD43",
+                description: "Modern steakhouse with a vibe"
+            },
+        ],
+
+        jokeDeals: [
+            {
+                name: "McDonald's",
+                emoji: "\uD83C\uDF5F",
+                tagline: "I'm Lovin' It... but are you?"
+            },
+            {
+                name: "Gas Station Sushi",
+                emoji: "\u26FD",
+                tagline: "Live dangerously, babe!"
+            },
+            {
+                name: "Leftover Pizza at Home",
+                emoji: "\uD83C\uDF55",
+                tagline: "We have food at home!"
+            },
+        ],
+
+        dealAcceptMessages: [
+            "Haha nice try... but NO. You deserve better than that!",
+            "Absolutely not! We can do better than that!",
+            "I don't think so! Let's keep going!",
+        ],
+    };
+
+    /* =============================================================
+       GAME STATE
+       ============================================================= */
+    let gameState = {
+        playerCase: null,        // index of the case she picked (0-3)
+        caseContents: [],        // shuffled restaurant indices
+        openedCases: [],         // which cases have been opened
+        currentRound: 0,         // 0, 1, 2
+        jokeIndex: 0,            // which joke deal to show next
+        noDodgeCount: 0,         // how many times No was dodged
+    };
+
+    /* =============================================================
+       INITIALIZATION
+       ============================================================= */
+    document.addEventListener('DOMContentLoaded', () => {
+        createFloatingHearts();
+        buildSlideshow();
+        startSlideshow();
+    });
+
+    /* =============================================================
+       FLOATING HEARTS
+       ============================================================= */
+    function createFloatingHearts() {
+        const container = document.getElementById('heartsBg');
+        const heartChars = ['\u2764', '\uD83D\uDC95', '\uD83D\uDC96', '\u2665', '\uD83E\uDE77'];
+        for (let i = 0; i < 20; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.fontSize = (12 + Math.random() * 20) + 'px';
+            heart.style.animationDuration = (8 + Math.random() * 12) + 's';
+            heart.style.animationDelay = (Math.random() * 10) + 's';
+            container.appendChild(heart);
+        }
+    }
+
+    /* =============================================================
+       SLIDESHOW
+       ============================================================= */
+    let slideInterval = null;
+    let currentSlide = 0;
+
+    function buildSlideshow() {
+        const container = document.getElementById('slideshow');
+        const counter = document.getElementById('slideCounter');
+
+        CONFIG.photos.forEach((photo, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'slide' + (i === 0 ? ' active-slide' : '');
+
+            if (photo) {
+                const img = document.createElement('img');
+                img.src = photo;
+                img.alt = 'Our photo ' + (i + 1);
+                slide.appendChild(img);
+            } else {
+                // Placeholder
+                const placeholder = document.createElement('div');
+                placeholder.className = 'slide-placeholder';
+                const colors = [
+                    'linear-gradient(135deg, #ff4d8d22, #e6193c44)',
+                    'linear-gradient(135deg, #4a002044, #ff4d8d22)',
+                    'linear-gradient(135deg, #e6193c22, #ffd70022)',
+                ];
+                placeholder.style.background = colors[i % colors.length];
+                placeholder.innerHTML =
+                    '<div class="heart-icon">\u2764\uFE0F</div>' +
+                    '<div>' + (CONFIG.photoMessages[i] || 'Add your photo here') + '</div>' +
+                    '<div style="margin-top:15px;font-size:0.8rem;opacity:0.5;">Photo ' + (i + 1) + '</div>';
+                slide.appendChild(placeholder);
+            }
+
+            container.appendChild(slide);
+
+            // Dot
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active-dot' : '');
+            counter.appendChild(dot);
+        });
+    }
+
+    function startSlideshow() {
+        if (CONFIG.photos.length <= 1) return;
+        slideInterval = setInterval(() => {
+            advanceSlide();
+        }, 3500);
+    }
+
+    function advanceSlide() {
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        slides[currentSlide].classList.remove('active-slide');
+        dots[currentSlide].classList.remove('active-dot');
+
+        currentSlide = (currentSlide + 1) % slides.length;
+
+        slides[currentSlide].classList.add('active-slide');
+        dots[currentSlide].classList.add('active-dot');
+    }
+
+    /* =============================================================
+       SCREEN TRANSITIONS
+       ============================================================= */
+    function goToScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById(screenId);
+        target.classList.add('active');
+
+        // Stop slideshow when leaving intro
+        if (screenId !== 'introScreen' && slideInterval) {
+            clearInterval(slideInterval);
+            slideInterval = null;
+        }
+    }
+
+    /* =============================================================
+       VALENTINE YES / NO LOGIC
+       ============================================================= */
+    function sayYes() {
+        initGame();
+        goToScreen('caseSelectScreen');
+    }
+
+    function sayNo() {
+        goToScreen('tooBadScreen');
+    }
+
+    // On desktop, the "No" button runs away from the mouse
+    function dodgeNo(e) {
+        gameState.noDodgeCount++;
+        const btn = document.getElementById('noBtn');
+        const container = document.getElementById('valentineButtons');
+
+        if (gameState.noDodgeCount >= 5) {
+            // After enough dodges, just shrink and disable
+            btn.style.fontSize = '0.5rem';
+            btn.style.padding = '4px 10px';
+            btn.textContent = '...fine';
+            btn.onclick = sayNo;
+            return;
+        }
+
+        // Move button to random position within container
+        const parentRect = container.getBoundingClientRect();
+        const maxX = Math.max(0, parentRect.width - btn.offsetWidth - 20);
+        const maxY = 80;
+        const randX = Math.random() * maxX;
+        const randY = Math.random() * maxY;
+
+        btn.style.position = 'absolute';
+        btn.style.left = randX + 'px';
+        btn.style.top = randY + 'px';
+        btn.style.transition = 'all 0.15s ease';
+    }
+
+    /* =============================================================
+       GAME INITIALIZATION
+       ============================================================= */
+    function initGame() {
+        // Shuffle restaurants into cases
+        gameState = {
+            playerCase: null,
+            caseContents: shuffleArray([0, 1, 2, 3]),
+            openedCases: [],
+            currentRound: 0,
+            jokeIndex: 0,
+            noDodgeCount: gameState.noDodgeCount,
+        };
+
+        buildCaseSelectScreen();
+    }
+
+    function shuffleArray(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    /* =============================================================
+       CASE SELECTION SCREEN
+       ============================================================= */
+    function buildCaseSelectScreen() {
+        // Build restaurant board
+        const board = document.getElementById('restaurantBoard');
+        board.innerHTML = '';
+        CONFIG.restaurants.forEach((r) => {
+            const item = document.createElement('div');
+            item.className = 'board-item';
+            item.innerHTML = '<span class="board-emoji">' + r.emoji + '</span>' + r.name;
+            board.appendChild(item);
+        });
+
+        // Build briefcases
+        const grid = document.getElementById('caseSelectGrid');
+        grid.innerHTML = '';
+        for (let i = 0; i < 4; i++) {
+            const c = document.createElement('div');
+            c.className = 'briefcase';
+            c.innerHTML = '<span class="case-number">' + (i + 1) + '</span>';
+            c.onclick = () => selectCase(i);
+            grid.appendChild(c);
+        }
+    }
+
+    function selectCase(index) {
+        gameState.playerCase = index;
+        buildGameScreen();
+        goToScreen('gameScreen');
+    }
+
+    /* =============================================================
+       GAME SCREEN
+       ============================================================= */
+    function buildGameScreen() {
+        // Your case display
+        document.getElementById('yourCaseNum').textContent = (gameState.playerCase + 1);
+
+        updateGameBoard();
+        updateGameCases();
+    }
+
+    function updateGameBoard() {
+        const board = document.getElementById('gameBoardDisplay');
+        board.innerHTML = '';
+        CONFIG.restaurants.forEach((r, i) => {
+            const item = document.createElement('div');
+            item.className = 'board-item';
+
+            // Check if this restaurant has been revealed (eliminated)
+            const eliminated = gameState.openedCases.some(
+                caseIdx => gameState.caseContents[caseIdx] === i
+            );
+
+            if (eliminated) item.classList.add('eliminated');
+            item.innerHTML = '<span class="board-emoji">' + r.emoji + '</span>' + r.name;
+            board.appendChild(item);
+        });
+    }
+
+    function updateGameCases() {
+        const grid = document.getElementById('gameCasesGrid');
+        grid.innerHTML = '';
+
+        for (let i = 0; i < 4; i++) {
+            const c = document.createElement('div');
+
+            if (i === gameState.playerCase) {
+                c.className = 'briefcase selected';
+                c.innerHTML =
+                    '<span class="case-number">' + (i + 1) + '</span>';
+
+                const wrapper = document.createElement('div');
+                wrapper.style.textAlign = 'center';
+                wrapper.appendChild(c);
+
+                const label = document.createElement('div');
+                label.className = 'your-case-label';
+                label.textContent = 'YOUR CASE';
+                wrapper.appendChild(label);
+
+                grid.appendChild(wrapper);
+            } else if (gameState.openedCases.includes(i)) {
+                c.className = 'briefcase opened';
+                const restIdx = gameState.caseContents[i];
+                const rest = CONFIG.restaurants[restIdx];
+                c.innerHTML =
+                    '<span class="case-number">' + (i + 1) + '</span>' +
+                    '<div class="case-reveal">' +
+                    '<span class="reveal-emoji">' + rest.emoji + '</span>' +
+                    '<span class="reveal-name">' + rest.name + '</span>' +
+                    '</div>';
+                grid.appendChild(c);
+            } else {
+                c.className = 'briefcase';
+                c.innerHTML = '<span class="case-number">' + (i + 1) + '</span>';
+                c.onclick = (() => {
+                    const idx = i;
+                    return () => openCase(idx);
+                })();
+                grid.appendChild(c);
+            }
+        }
+    }
+
+    /* =============================================================
+       OPENING A CASE
+       ============================================================= */
+    function openCase(caseIndex) {
+        gameState.openedCases.push(caseIndex);
+
+        const restIdx = gameState.caseContents[caseIndex];
+        const rest = CONFIG.restaurants[restIdx];
+
+        // Show overlay
+        document.getElementById('openCaseNumber').textContent = 'Case ' + (caseIndex + 1);
+        document.getElementById('openEmoji').textContent = rest.emoji;
+        document.getElementById('openName').textContent = rest.name;
+        document.getElementById('caseOpenOverlay').classList.add('visible');
+    }
+
+    function dismissCaseReveal() {
+        document.getElementById('caseOpenOverlay').classList.remove('visible');
+
+        // Update game board and cases
+        updateGameBoard();
+        updateGameCases();
+
+        gameState.currentRound++;
+
+        // Determine how many cases remain (excluding player's case)
+        const remainingCases = 4 - 1 - gameState.openedCases.length; // total - player - opened
+
+        if (remainingCases === 1) {
+            // Go to final choice (keep or swap)
+            buildFinalChoice();
+            goToScreen('finalChoiceScreen');
+        } else {
+            // Show a joke deal offer
+            showDealOffer();
+        }
+    }
+
+    /* =============================================================
+       DEAL OFFER
+       ============================================================= */
+    function showDealOffer() {
+        const deal = CONFIG.jokeDeals[gameState.jokeIndex % CONFIG.jokeDeals.length];
+        gameState.jokeIndex++;
+
+        document.getElementById('dealEmoji').textContent = deal.emoji;
+        document.getElementById('dealName').textContent = deal.name;
+        document.getElementById('dealTagline').textContent = deal.tagline;
+
+        goToScreen('dealScreen');
+
+        // Reset phone animation
+        const phone = document.getElementById('phoneIcon');
+        phone.style.animation = 'none';
+        phone.offsetHeight; // trigger reflow
+        phone.style.animation = '';
+    }
+
+    function acceptDeal() {
+        // Funny rejection — she doesn't actually get the bad deal
+        const msg = CONFIG.dealAcceptMessages[
+            gameState.jokeIndex % CONFIG.dealAcceptMessages.length
+        ];
+        alert(msg);
+        // Send back to game
+        noDeal();
+    }
+
+    function noDeal() {
+        goToScreen('gameScreen');
+        document.getElementById('gameInstruction').textContent = 'Pick another case to open!';
+    }
+
+    /* =============================================================
+       FINAL CHOICE (KEEP OR SWAP)
+       ============================================================= */
+    function buildFinalChoice() {
+        const container = document.getElementById('finalCases');
+        container.innerHTML = '';
+
+        // Find the remaining unopened case (not player's)
+        let otherCase = -1;
+        for (let i = 0; i < 4; i++) {
+            if (i !== gameState.playerCase && !gameState.openedCases.includes(i)) {
+                otherCase = i;
+                break;
+            }
+        }
+
+        // Player's case
+        const playerOption = document.createElement('div');
+        playerOption.className = 'final-case-option';
+        playerOption.innerHTML =
+            '<div class="briefcase selected" style="width:120px;height:120px;">' +
+            '<span class="case-number">' + (gameState.playerCase + 1) + '</span>' +
+            '</div>' +
+            '<div class="case-label">Your Case</div>';
+        container.appendChild(playerOption);
+
+        // VS
+        const vs = document.createElement('div');
+        vs.style.cssText = 'font-size:2rem;color:var(--accent-gold);align-self:center;font-weight:bold;';
+        vs.textContent = 'VS';
+        container.appendChild(vs);
+
+        // Other case
+        const otherOption = document.createElement('div');
+        otherOption.className = 'final-case-option';
+        otherOption.innerHTML =
+            '<div class="briefcase" style="width:120px;height:120px;">' +
+            '<span class="case-number">' + (otherCase + 1) + '</span>' +
+            '</div>' +
+            '<div class="case-label">Case ' + (otherCase + 1) + '</div>';
+        container.appendChild(otherOption);
+
+        // Store other case for swap logic
+        gameState.otherCase = otherCase;
+    }
+
+    function finalDecision(choice) {
+        let finalCaseIndex;
+        if (choice === 'keep') {
+            finalCaseIndex = gameState.playerCase;
+        } else {
+            finalCaseIndex = gameState.otherCase;
+        }
+
+        const restIdx = gameState.caseContents[finalCaseIndex];
+        const rest = CONFIG.restaurants[restIdx];
+
+        // Show reveal
+        document.getElementById('revealEmoji').textContent = rest.emoji;
+        document.getElementById('revealName').textContent = rest.name;
+        document.getElementById('revealDesc').textContent = rest.description;
+
+        goToScreen('revealScreen');
+        launchConfetti();
+    }
+
+    /* =============================================================
+       CONFETTI
+       ============================================================= */
+    function launchConfetti() {
+        const container = document.getElementById('confettiContainer');
+        container.innerHTML = '';
+
+        const colors = [
+            '#ff4d8d', '#e6193c', '#ffd700', '#ff69b4',
+            '#ff1493', '#ff6b6b', '#ffa500', '#ff8c00',
+            '#ffffff', '#ffb6c1',
+        ];
+
+        for (let i = 0; i < 80; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = Math.random() * 100 + '%';
+            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.width = (6 + Math.random() * 8) + 'px';
+            piece.style.height = (6 + Math.random() * 8) + 'px';
+            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            piece.style.animationDuration = (2 + Math.random() * 3) + 's';
+            piece.style.animationDelay = (Math.random() * 1.5) + 's';
+            container.appendChild(piece);
+        }
+
+        // Clean up after animation
+        setTimeout(() => {
+            container.innerHTML = '';
+        }, 6000);
+    }
+
+    /* =============================================================
+       PLAY AGAIN
+       ============================================================= */
+    function playAgain() {
+        gameState.noDodgeCount = 0;
+
+        // Reset No button
+        const noBtn = document.getElementById('noBtn');
+        noBtn.style = '';
+        noBtn.textContent = 'No';
+
+        initGame();
+        goToScreen('caseSelectScreen');
+    }
+    </script>
+</body>
+</html>
