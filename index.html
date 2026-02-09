@@ -1067,31 +1067,22 @@
         const counter = document.getElementById('slideCounter');
         let slideIndex = 0;
 
-        // --- GIF SLIDE (first, top half only) ---
+        // --- GIF SLIDE (first, shown full like a regular photo) ---
         const gifSlide = document.createElement('div');
-        gifSlide.className = 'slide gif-half active-slide';
+        gifSlide.className = 'slide active-slide';
 
-        const gifCrop = document.createElement('div');
-        gifCrop.className = 'gif-half-crop';
         const gifImg = document.createElement('img');
         gifImg.src = CONFIG.gif.src;
         gifImg.alt = 'Our GIF';
         gifImg.onerror = function() {
-            // If GIF not found, show placeholder
-            this.parentElement.innerHTML =
-                '<div class="slide-placeholder" style="height:100%">' +
+            const placeholder = document.createElement('div');
+            placeholder.className = 'slide-placeholder';
+            placeholder.innerHTML =
                 '<div class="heart-icon">\u2764\uFE0F</div>' +
-                '<div>Add your GIF to photos/intro.gif</div></div>';
+                '<div>Add your GIF to photos/intro.gif</div>';
+            this.replaceWith(placeholder);
         };
-        gifCrop.appendChild(gifImg);
-        gifSlide.appendChild(gifCrop);
-
-        const gifText = document.createElement('div');
-        gifText.className = 'gif-half-text';
-        gifText.innerHTML =
-            '<div class="gif-heart">\u2764\uFE0F</div>' +
-            '<div class="gif-caption">' + CONFIG.gif.caption + '</div>';
-        gifSlide.appendChild(gifText);
+        gifSlide.appendChild(gifImg);
 
         container.appendChild(gifSlide);
         const gifDot = document.createElement('div');
