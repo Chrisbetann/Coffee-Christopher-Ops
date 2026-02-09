@@ -1100,7 +1100,7 @@
             img.src = photo;
             img.alt = 'Our photo ' + (i + 1);
             // Photos 2 and 3 (index 1,2) need centered positioning
-            if (i === 1 || i === 2) {
+            if (i === 0 || i === 1 || i === 2) {
                 img.style.objectPosition = 'center center';
             }
             img.onerror = function() {
