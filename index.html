@@ -6,7 +6,7 @@
     <title>Valentine's Day Special</title>
     <style>
         /* ============================================================
-           CUSTOMIZE: Change colors, fonts, etc. here
+           THEME COLORS
            ============================================================ */
         :root {
             --bg-dark: #1a0008;
@@ -76,9 +76,7 @@
             animation: fadeIn 0.8s ease-out;
         }
 
-        .screen.active {
-            display: flex;
-        }
+        .screen.active { display: flex; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -156,6 +154,7 @@
             box-shadow: var(--shadow-glow);
             border: 3px solid rgba(255, 77, 141, 0.3);
             margin-bottom: 30px;
+            background: #0a0004;
         }
 
         .slide {
@@ -170,14 +169,53 @@
             flex-direction: column;
         }
 
-        .slide.active-slide {
-            opacity: 1;
-        }
+        .slide.active-slide { opacity: 1; }
 
         .slide img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        /* GIF slide: show only top half */
+        .slide.gif-half {
+            justify-content: flex-start;
+        }
+
+        .gif-half-crop {
+            width: 100%;
+            height: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .gif-half-crop img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .gif-half-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .gif-half-text .gif-heart {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        .gif-half-text .gif-caption {
+            font-size: 1.1rem;
+            color: var(--accent-pink);
+            font-style: italic;
         }
 
         .slide-placeholder {
@@ -304,7 +342,7 @@
         }
 
         /* ============================================================
-           SCREEN 4: CASE SELECTION
+           GAME SCREENS: BOARD & CASES
            ============================================================ */
         .game-title {
             font-size: clamp(1.3rem, 4.5vw, 2.2rem);
@@ -323,22 +361,29 @@
             margin-bottom: 30px;
         }
 
-        /* Restaurant board */
+        .game-instruction {
+            font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--accent-gold);
+        }
+
+        /* Restaurant board — 3 columns for 6 restaurants */
         .restaurant-board {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 35px;
-            width: min(90vw, 500px);
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+            width: min(95vw, 560px);
         }
 
         .board-item {
-            padding: 12px 16px;
+            padding: 10px 8px;
             border-radius: 12px;
             background: rgba(255, 215, 0, 0.08);
             border: 1px solid rgba(255, 215, 0, 0.25);
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             transition: all 0.5s ease;
         }
 
@@ -350,17 +395,24 @@
         }
 
         .board-item .board-emoji {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
-        /* Briefcases */
+        .board-item .board-rank {
+            font-size: 0.65rem;
+            color: rgba(255, 215, 0, 0.5);
+            display: block;
+            margin-top: 3px;
+        }
+
+        /* Briefcases — 3 columns for 6 cases */
         .cases-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            width: min(90vw, 400px);
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: min(95vw, 420px);
             margin-bottom: 20px;
         }
 
@@ -384,8 +436,7 @@
             content: '';
             position: absolute;
             top: 50%;
-            left: 10%;
-            right: 10%;
+            left: 10%; right: 10%;
             height: 3px;
             background: var(--accent-gold-dark);
             border-radius: 2px;
@@ -397,8 +448,7 @@
             top: calc(50% - 8px);
             left: 50%;
             transform: translateX(-50%);
-            width: 20px;
-            height: 16px;
+            width: 20px; height: 16px;
             border: 3px solid var(--accent-gold-dark);
             border-radius: 3px;
             background: linear-gradient(to bottom, #e6c200, #c9a800);
@@ -409,12 +459,10 @@
             box-shadow: 0 12px 30px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
-        .briefcase:active {
-            transform: scale(0.95);
-        }
+        .briefcase:active { transform: scale(0.95); }
 
         .case-number {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: bold;
             color: var(--bg-dark);
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
@@ -429,18 +477,12 @@
             animation: pulse 2s ease-in-out infinite;
         }
 
-        .briefcase.selected::before {
-            background: #c0153a;
-        }
-
+        .briefcase.selected::before { background: #c0153a; }
         .briefcase.selected::after {
             border-color: #c0153a;
             background: linear-gradient(to bottom, var(--accent-red), #c0153a);
         }
-
-        .briefcase.selected .case-number {
-            color: white;
-        }
+        .briefcase.selected .case-number { color: white; }
 
         .briefcase.opened {
             background: linear-gradient(145deg, #333, #555);
@@ -451,14 +493,8 @@
 
         .briefcase.opened::before { background: #444; }
         .briefcase.opened::after { border-color: #444; background: #444; }
-
-        .briefcase.opened .case-number {
-            color: #888;
-        }
-
-        .briefcase.opened .case-reveal {
-            display: flex;
-        }
+        .briefcase.opened .case-number { color: #888; }
+        .briefcase.opened .case-reveal { display: flex; }
 
         .case-reveal {
             display: none;
@@ -470,18 +506,15 @@
             justify-content: center;
             flex-direction: column;
             border-radius: 13px;
-            padding: 10px;
+            padding: 8px;
             text-align: center;
         }
 
-        .case-reveal .reveal-emoji {
-            font-size: 2rem;
-        }
-
+        .case-reveal .reveal-emoji { font-size: 1.8rem; }
         .case-reveal .reveal-name {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: rgba(255, 255, 255, 0.8);
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         @keyframes pulse {
@@ -490,53 +523,43 @@
         }
 
         .your-case-label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--accent-pink);
             text-align: center;
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
-        /* ============================================================
-           SCREEN 5: GAME PLAY
-           ============================================================ */
-        .game-instruction {
-            font-size: clamp(1.1rem, 3.5vw, 1.5rem);
-            text-align: center;
-            margin-bottom: 25px;
-            color: var(--accent-gold);
-        }
-
+        /* Your case display during game */
         .your-case-display {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 25px;
-            padding: 15px;
+            margin-bottom: 20px;
+            padding: 12px;
             border-radius: 15px;
             background: rgba(255, 77, 141, 0.1);
             border: 1px solid rgba(255, 77, 141, 0.3);
         }
 
         .your-case-display .mini-case {
-            width: 60px;
-            height: 60px;
+            width: 55px; height: 55px;
             border-radius: 10px;
             background: linear-gradient(145deg, var(--accent-pink), var(--accent-red));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .your-case-display span {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--accent-pink);
         }
 
         /* ============================================================
-           SCREEN 6: DEAL OFFER
+           DEAL OFFER SCREEN
            ============================================================ */
         .banker-section {
             text-align: center;
@@ -568,17 +591,12 @@
             margin-bottom: 30px;
         }
 
-        .deal-offer-card .deal-emoji {
-            font-size: 4rem;
-            margin-bottom: 10px;
-        }
-
+        .deal-offer-card .deal-emoji { font-size: 4rem; margin-bottom: 10px; }
         .deal-offer-card .deal-name {
             font-size: 1.8rem;
             color: var(--accent-gold);
             margin-bottom: 8px;
         }
-
         .deal-offer-card .deal-tagline {
             font-size: 1rem;
             color: rgba(255, 255, 255, 0.6);
@@ -593,7 +611,7 @@
         }
 
         /* ============================================================
-           SCREEN 7: FINAL CHOICE (KEEP OR SWAP)
+           FINAL CHOICE: KEEP OR SWAP
            ============================================================ */
         .final-choice-title {
             font-size: clamp(1.3rem, 4vw, 2rem);
@@ -617,11 +635,7 @@
             gap: 10px;
         }
 
-        .final-case-option .briefcase {
-            width: 120px;
-            height: 120px;
-        }
-
+        .final-case-option .briefcase { width: 120px; height: 120px; }
         .final-case-option .case-label {
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.7);
@@ -635,7 +649,7 @@
         }
 
         /* ============================================================
-           SCREEN 8: FINAL REVEAL
+           FINAL REVEAL
            ============================================================ */
         .reveal-container {
             text-align: center;
@@ -656,10 +670,7 @@
             margin-bottom: 15px;
         }
 
-        .reveal-restaurant-emoji {
-            font-size: 5rem;
-            margin-bottom: 15px;
-        }
+        .reveal-restaurant-emoji { font-size: 5rem; margin-bottom: 15px; }
 
         .reveal-restaurant-name {
             font-size: clamp(2rem, 7vw, 3.5rem);
@@ -685,9 +696,7 @@
             margin-bottom: 30px;
         }
 
-        .play-again-btn {
-            margin-top: 20px;
-        }
+        .play-again-btn { margin-top: 20px; }
 
         /* ============================================================
            CONFETTI
@@ -704,8 +713,7 @@
         .confetti-piece {
             position: absolute;
             top: -20px;
-            width: 10px;
-            height: 10px;
+            width: 10px; height: 10px;
             animation: confettiFall linear forwards;
         }
 
@@ -715,7 +723,7 @@
         }
 
         /* ============================================================
-           CASE OPEN ANIMATION OVERLAY
+           CASE OPEN OVERLAY
            ============================================================ */
         .case-open-overlay {
             display: none;
@@ -730,9 +738,7 @@
             animation: fadeIn 0.3s ease;
         }
 
-        .case-open-overlay.visible {
-            display: flex;
-        }
+        .case-open-overlay.visible { display: flex; }
 
         .case-open-overlay .open-case-number {
             font-size: 1.2rem;
@@ -751,37 +757,34 @@
             color: var(--text-white);
         }
 
-        .case-open-overlay .open-dismiss {
-            margin-top: 30px;
-        }
+        .case-open-overlay .open-dismiss { margin-top: 30px; }
 
         /* ============================================================
            RESPONSIVE
            ============================================================ */
         @media (max-width: 480px) {
-            .cases-grid { gap: 12px; }
-            .briefcase .case-number { font-size: 2rem; }
-            .btn { padding: 14px 30px; font-size: 1rem; }
+            .cases-grid { gap: 10px; width: min(95vw, 340px); }
+            .briefcase .case-number { font-size: 1.8rem; }
+            .btn { padding: 14px 28px; font-size: 1rem; }
             .deal-buttons { flex-direction: column; align-items: center; }
             .swap-buttons { flex-direction: column; align-items: center; }
+            .restaurant-board { gap: 8px; }
+            .board-item { padding: 8px 5px; font-size: 0.75rem; }
+            .board-item .board-emoji { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
-    <!-- ============================================================
-         FLOATING HEARTS BACKGROUND
-         ============================================================ -->
+    <!-- FLOATING HEARTS BACKGROUND -->
     <div class="hearts-bg" id="heartsBg"></div>
 
-    <!-- ============================================================
-         SCREEN 1: PHOTO SLIDESHOW INTRO
-         ============================================================ -->
+    <!-- SCREEN 1: PHOTO SLIDESHOW INTRO -->
     <div class="screen active" id="introScreen">
         <div class="intro-title">Our Story</div>
-        <div class="intro-subtitle">A few of my favorite moments with you</div>
+        <div class="intro-subtitle">A few of my favorite moments with you, Novia</div>
 
         <div class="slideshow-container" id="slideshow">
-            <!-- Slides are generated by JavaScript from the CONFIG below -->
+            <!-- Generated by JS -->
         </div>
 
         <div class="slide-counter" id="slideCounter"></div>
@@ -791,57 +794,39 @@
         </button>
     </div>
 
-    <!-- ============================================================
-         SCREEN 2: BE MY VALENTINE?
-         ============================================================ -->
+    <!-- SCREEN 2: BE MY VALENTINE? -->
     <div class="screen" id="valentineScreen">
         <div class="valentine-heart" id="bigHeart">&#10084;&#65039;</div>
         <div class="valentine-question">
-            Will You Be<br>My Valentine?
+            Will You Be<br>My Valentine, Novia?
         </div>
         <div class="valentine-buttons" id="valentineButtons">
-            <button class="btn btn-primary" onclick="sayYes()">
-                Yes!
-            </button>
-            <button class="btn btn-no" id="noBtn" onclick="sayNo()" onmouseover="dodgeNo(event)">
-                No
-            </button>
+            <button class="btn btn-primary" onclick="sayYes()">Yes!</button>
+            <button class="btn btn-no" id="noBtn" onclick="sayNo()" onmouseover="dodgeNo(event)">No</button>
         </div>
     </div>
 
-    <!-- ============================================================
-         SCREEN 3: TOO BAD
-         ============================================================ -->
+    <!-- SCREEN 3: TOO BAD -->
     <div class="screen" id="tooBadScreen">
         <div class="too-bad-emoji">&#128536;</div>
         <div class="too-bad-text">Too Bad!</div>
-        <div class="too-bad-sub">That was never really an option...</div>
-        <button class="btn btn-primary" onclick="sayYes()">
-            Fine... YES!
-        </button>
+        <div class="too-bad-sub">That was never really an option, Novia...</div>
+        <button class="btn btn-primary" onclick="sayYes()">Fine... YES!</button>
     </div>
 
-    <!-- ============================================================
-         SCREEN 4: CASE SELECTION
-         ============================================================ -->
+    <!-- SCREEN 4: CASE SELECTION -->
     <div class="screen" id="caseSelectScreen">
         <div class="game-title">Valentine's Deal or No Deal</div>
         <div class="game-subtitle">Tonight's dinner possibilities:</div>
 
-        <div class="restaurant-board" id="restaurantBoard">
-            <!-- Generated by JS -->
-        </div>
+        <div class="restaurant-board" id="restaurantBoard"></div>
 
-        <div class="game-instruction">Pick your case!</div>
+        <div class="game-instruction">Pick your case, Novia!</div>
 
-        <div class="cases-grid" id="caseSelectGrid">
-            <!-- Generated by JS -->
-        </div>
+        <div class="cases-grid" id="caseSelectGrid"></div>
     </div>
 
-    <!-- ============================================================
-         SCREEN 5: GAME ROUNDS
-         ============================================================ -->
+    <!-- SCREEN 5: GAME ROUNDS -->
     <div class="screen" id="gameScreen">
         <div class="game-title">Valentine's Deal or No Deal</div>
 
@@ -850,20 +835,14 @@
             <span>Your Case</span>
         </div>
 
-        <div class="restaurant-board" id="gameBoardDisplay">
-            <!-- Generated by JS -->
-        </div>
+        <div class="restaurant-board" id="gameBoardDisplay"></div>
 
         <div class="game-instruction" id="gameInstruction">Pick a case to open!</div>
 
-        <div class="cases-grid" id="gameCasesGrid">
-            <!-- Generated by JS -->
-        </div>
+        <div class="cases-grid" id="gameCasesGrid"></div>
     </div>
 
-    <!-- ============================================================
-         CASE OPEN OVERLAY
-         ============================================================ -->
+    <!-- CASE OPEN OVERLAY -->
     <div class="case-open-overlay" id="caseOpenOverlay">
         <div class="open-case-number" id="openCaseNumber"></div>
         <div class="open-emoji" id="openEmoji"></div>
@@ -871,9 +850,7 @@
         <button class="btn btn-gold open-dismiss" onclick="dismissCaseReveal()">Continue</button>
     </div>
 
-    <!-- ============================================================
-         SCREEN 6: DEAL OFFER
-         ============================================================ -->
+    <!-- SCREEN 6: DEAL OFFER -->
     <div class="screen" id="dealScreen">
         <div class="banker-section">
             <div class="phone-ring" id="phoneIcon">&#128222;</div>
@@ -890,16 +867,12 @@
         </div>
     </div>
 
-    <!-- ============================================================
-         SCREEN 7: FINAL CHOICE — KEEP OR SWAP
-         ============================================================ -->
+    <!-- SCREEN 7: FINAL CHOICE — KEEP OR SWAP -->
     <div class="screen" id="finalChoiceScreen">
         <div class="game-title">Final Decision!</div>
-        <div class="final-choice-title">Keep your case or swap?</div>
+        <div class="final-choice-title">Keep your case or swap, Novia?</div>
 
-        <div class="final-cases" id="finalCases">
-            <!-- Generated by JS -->
-        </div>
+        <div class="final-cases" id="finalCases"></div>
 
         <div class="swap-buttons">
             <button class="btn btn-primary" onclick="finalDecision('keep')">Keep My Case</button>
@@ -907,9 +880,7 @@
         </div>
     </div>
 
-    <!-- ============================================================
-         SCREEN 8: FINAL REVEAL
-         ============================================================ -->
+    <!-- SCREEN 8: FINAL REVEAL -->
     <div class="screen" id="revealScreen">
         <div class="reveal-container">
             <div class="reveal-overline">Tonight, we're going to...</div>
@@ -917,7 +888,7 @@
             <div class="reveal-restaurant-name" id="revealName"></div>
             <div class="reveal-restaurant-desc" id="revealDesc"></div>
             <div class="reveal-message">
-                Happy Valentine's Day, my love! &#10084;&#65039;
+                Happy Valentine's Day, Novia &#10084;&#65039;
             </div>
             <button class="btn btn-outline play-again-btn" onclick="playAgain()">
                 Play Again
@@ -925,106 +896,143 @@
         </div>
     </div>
 
-    <!-- ============================================================
-         CONFETTI CONTAINER
-         ============================================================ -->
+    <!-- CONFETTI -->
     <div class="confetti-container" id="confettiContainer"></div>
 
-    <!-- ============================================================
-         JAVASCRIPT
-         ============================================================ -->
     <script>
     /* =============================================================
-       CONFIGURATION — CUSTOMIZE EVERYTHING HERE!
+       CONFIGURATION
        =============================================================
-       photos:       Array of image paths for the intro slideshow.
-                     Put your photos in the "photos/" folder and
-                     list them here. Use at least 2-3 for best effect.
+       To set up your photos:
+       1. Put your files in the "photos/" folder
+       2. Update the paths below
 
-       restaurants:  The 4 premium dinner spots. Change names,
-                     emojis, and descriptions to match your picks.
+       To set up the GIF:
+       1. Put your GIF in "photos/intro.gif"
+       2. It will show first with only the top half visible
 
-       jokeDeals:    The funny "banker offers" shown between rounds.
-                     These should be obviously bad so she rejects them.
-
-       messages:     Various text shown throughout the game.
+       Restaurants are ranked 1 (best) to 6 (lowest).
+       After the first joke deal, subsequent offers will be
+       the worst-ranked restaurant still on the board
+       (excluding whatever is in her case).
        ============================================================= */
+    const TOTAL_CASES = 6;
+
     const CONFIG = {
+        /* --- GIF (shown first, top half only) --- */
+        gif: {
+            src: "photos/intro.gif",   // <-- Put your GIF here
+            caption: "Our love story...",
+        },
+
+        /* --- SLIDESHOW PHOTOS ---
+           Replace the paths below with your actual images.
+           Photos 1-5  = from this chat (save them as shown).
+           Photos 6-10 = from next chat (add them later).
+        */
         photos: [
-            /* Replace these with your actual photo paths, e.g.:
-               "photos/us-at-beach.jpg",
-               "photos/anniversary.jpg",
-               "photos/silly-selfie.jpg",
-            */
-            null,  // placeholder 1 — replace with "photos/your-photo.jpg"
-            null,  // placeholder 2
-            null,  // placeholder 3
+            "photos/photo1.jpg",   // Beach / paddleboard cheers
+            "photos/photo2.jpg",   // Harry Potter park
+            "photos/photo3.jpg",   // Festival / concert night
+            "photos/photo4.jpg",   // Mountains / snow (Colorado)
+            "photos/photo5.jpg",   // Date night in black
+            "photos/photo6.jpg",   // (Next chat — photo 6)
+            "photos/photo7.jpg",   // (Next chat — photo 7)
+            "photos/photo8.jpg",   // (Next chat — photo 8)
+            "photos/photo9.jpg",   // (Next chat — photo 9)
+            "photos/photo10.jpg",  // (Next chat — photo 10)
         ],
 
         photoMessages: [
-            "Every moment with you is my favorite",
-            "You make every day brighter",
-            "My favorite person in the world",
+            "Cheers to us, mi amor",
+            "Our magical adventures",
+            "Dancing through life together",
+            "From the mountains to forever",
+            "My favorite place is next to you",
+            "Maroon Bells with my forever person",
+            "Best couple's costume, hands down",
+            "Epcot nights with you hit different",
+            "This is the way... with you",
+            "Viva Las Vegas, Novia!",
         ],
 
+        /* --- RESTAURANTS (ranked 1 = best, 6 = lowest) ---
+           Rank matters for the deal offers after round 1.
+           The banker will offer the worst-ranked remaining option.
+        */
         restaurants: [
             {
-                name: "The Capital Grille",
-                emoji: "\uD83E\uDD69",
-                description: "An upscale steakhouse experience"
+                name: "Kuro",
+                subtitle: "Seminole Hard Rock",
+                emoji: "\uD83E\uDD62",
+                description: "Exquisite Japanese fine dining at the Hard Rock",
+                rank: 1,
             },
             {
-                name: "Nobu",
-                emoji: "\uD83C\uDF63",
-                description: "World-class Japanese cuisine"
-            },
-            {
-                name: "Carbone",
+                name: "Capriccio Ristorante",
                 emoji: "\uD83C\uDF5D",
-                description: "Classic Italian-American fine dining"
+                description: "Elegant Italian cuisine at its finest",
+                rank: 2,
             },
             {
-                name: "STK",
-                emoji: "\uD83E\uDD43",
-                description: "Modern steakhouse with a vibe"
+                name: "Casa Sensei",
+                emoji: "\uD83C\uDF63",
+                description: "Asian fusion on the waterfront",
+                rank: 3,
+            },
+            {
+                name: "Benihana's",
+                emoji: "\uD83D\uDD25",
+                description: "Iconic Japanese teppanyaki experience",
+                rank: 4,
+            },
+            {
+                name: "Casa Cubana",
+                emoji: "\uD83C\uDDE8\uD83C\uDDFA",
+                description: "Authentic Cuban flavors and vibes",
+                rank: 5,
+            },
+            {
+                name: "Cooper's Hawk",
+                emoji: "\uD83C\uDF77",
+                description: "Winery restaurant with a great atmosphere",
+                rank: 6,
             },
         ],
 
+        /* --- JOKE DEALS (only used for the FIRST deal offer) --- */
         jokeDeals: [
             {
                 name: "McDonald's",
                 emoji: "\uD83C\uDF5F",
-                tagline: "I'm Lovin' It... but are you?"
+                tagline: "I'm Lovin' It... but are you?",
             },
             {
                 name: "Gas Station Sushi",
                 emoji: "\u26FD",
-                tagline: "Live dangerously, babe!"
+                tagline: "Live dangerously, Novia!",
             },
             {
                 name: "Leftover Pizza at Home",
                 emoji: "\uD83C\uDF55",
-                tagline: "We have food at home!"
+                tagline: "We have food at home!",
             },
         ],
 
-        dealAcceptMessages: [
-            "Haha nice try... but NO. You deserve better than that!",
-            "Absolutely not! We can do better than that!",
-            "I don't think so! Let's keep going!",
-        ],
+        jokeAcceptMessage: "Haha nice try... but NO. You deserve better than that, Novia!",
     };
 
     /* =============================================================
        GAME STATE
        ============================================================= */
     let gameState = {
-        playerCase: null,        // index of the case she picked (0-3)
-        caseContents: [],        // shuffled restaurant indices
-        openedCases: [],         // which cases have been opened
-        currentRound: 0,         // 0, 1, 2
-        jokeIndex: 0,            // which joke deal to show next
-        noDodgeCount: 0,         // how many times No was dodged
+        playerCase: null,
+        caseContents: [],
+        openedCases: [],
+        currentRound: 0,
+        currentDealIsJoke: false,
+        currentDealRestIdx: null,
+        noDodgeCount: 0,
     };
 
     /* =============================================================
@@ -1063,18 +1071,50 @@
     function buildSlideshow() {
         const container = document.getElementById('slideshow');
         const counter = document.getElementById('slideCounter');
+        let slideIndex = 0;
 
+        // --- GIF SLIDE (first, top half only) ---
+        const gifSlide = document.createElement('div');
+        gifSlide.className = 'slide gif-half active-slide';
+
+        const gifCrop = document.createElement('div');
+        gifCrop.className = 'gif-half-crop';
+        const gifImg = document.createElement('img');
+        gifImg.src = CONFIG.gif.src;
+        gifImg.alt = 'Our GIF';
+        gifImg.onerror = function() {
+            // If GIF not found, show placeholder
+            this.parentElement.innerHTML =
+                '<div class="slide-placeholder" style="height:100%">' +
+                '<div class="heart-icon">\u2764\uFE0F</div>' +
+                '<div>Add your GIF to photos/intro.gif</div></div>';
+        };
+        gifCrop.appendChild(gifImg);
+        gifSlide.appendChild(gifCrop);
+
+        const gifText = document.createElement('div');
+        gifText.className = 'gif-half-text';
+        gifText.innerHTML =
+            '<div class="gif-heart">\u2764\uFE0F</div>' +
+            '<div class="gif-caption">' + CONFIG.gif.caption + '</div>';
+        gifSlide.appendChild(gifText);
+
+        container.appendChild(gifSlide);
+        const gifDot = document.createElement('div');
+        gifDot.className = 'dot active-dot';
+        counter.appendChild(gifDot);
+        slideIndex++;
+
+        // --- PHOTO SLIDES ---
         CONFIG.photos.forEach((photo, i) => {
             const slide = document.createElement('div');
-            slide.className = 'slide' + (i === 0 ? ' active-slide' : '');
+            slide.className = 'slide';
 
-            if (photo) {
-                const img = document.createElement('img');
-                img.src = photo;
-                img.alt = 'Our photo ' + (i + 1);
-                slide.appendChild(img);
-            } else {
-                // Placeholder
+            const img = document.createElement('img');
+            img.src = photo;
+            img.alt = 'Our photo ' + (i + 1);
+            img.onerror = function() {
+                // If photo not found, show placeholder
                 const placeholder = document.createElement('div');
                 placeholder.className = 'slide-placeholder';
                 const colors = [
@@ -1086,34 +1126,33 @@
                 placeholder.innerHTML =
                     '<div class="heart-icon">\u2764\uFE0F</div>' +
                     '<div>' + (CONFIG.photoMessages[i] || 'Add your photo here') + '</div>' +
-                    '<div style="margin-top:15px;font-size:0.8rem;opacity:0.5;">Photo ' + (i + 1) + '</div>';
-                slide.appendChild(placeholder);
-            }
-
+                    '<div style="margin-top:15px;font-size:0.8rem;opacity:0.5;">' + photo + '</div>';
+                this.replaceWith(placeholder);
+            };
+            slide.appendChild(img);
             container.appendChild(slide);
 
-            // Dot
             const dot = document.createElement('div');
-            dot.className = 'dot' + (i === 0 ? ' active-dot' : '');
+            dot.className = 'dot';
             counter.appendChild(dot);
+            slideIndex++;
         });
     }
 
     function startSlideshow() {
-        if (CONFIG.photos.length <= 1) return;
-        slideInterval = setInterval(() => {
-            advanceSlide();
-        }, 3500);
+        const totalSlides = 1 + CONFIG.photos.length; // gif + photos
+        if (totalSlides <= 1) return;
+        slideInterval = setInterval(advanceSlide, 3500);
     }
 
     function advanceSlide() {
         const slides = document.querySelectorAll('.slide');
         const dots = document.querySelectorAll('.dot');
+        if (!slides.length) return;
+
         slides[currentSlide].classList.remove('active-slide');
         dots[currentSlide].classList.remove('active-dot');
-
         currentSlide = (currentSlide + 1) % slides.length;
-
         slides[currentSlide].classList.add('active-slide');
         dots[currentSlide].classList.add('active-dot');
     }
@@ -1123,10 +1162,8 @@
        ============================================================= */
     function goToScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        const target = document.getElementById(screenId);
-        target.classList.add('active');
+        document.getElementById(screenId).classList.add('active');
 
-        // Stop slideshow when leaving intro
         if (screenId !== 'introScreen' && slideInterval) {
             clearInterval(slideInterval);
             slideInterval = null;
@@ -1145,14 +1182,12 @@
         goToScreen('tooBadScreen');
     }
 
-    // On desktop, the "No" button runs away from the mouse
     function dodgeNo(e) {
         gameState.noDodgeCount++;
         const btn = document.getElementById('noBtn');
         const container = document.getElementById('valentineButtons');
 
         if (gameState.noDodgeCount >= 5) {
-            // After enough dodges, just shrink and disable
             btn.style.fontSize = '0.5rem';
             btn.style.padding = '4px 10px';
             btn.textContent = '...fine';
@@ -1160,16 +1195,13 @@
             return;
         }
 
-        // Move button to random position within container
         const parentRect = container.getBoundingClientRect();
         const maxX = Math.max(0, parentRect.width - btn.offsetWidth - 20);
         const maxY = 80;
-        const randX = Math.random() * maxX;
-        const randY = Math.random() * maxY;
 
         btn.style.position = 'absolute';
-        btn.style.left = randX + 'px';
-        btn.style.top = randY + 'px';
+        btn.style.left = (Math.random() * maxX) + 'px';
+        btn.style.top = (Math.random() * maxY) + 'px';
         btn.style.transition = 'all 0.15s ease';
     }
 
@@ -1177,13 +1209,16 @@
        GAME INITIALIZATION
        ============================================================= */
     function initGame() {
-        // Shuffle restaurants into cases
+        const indices = [];
+        for (let i = 0; i < TOTAL_CASES; i++) indices.push(i);
+
         gameState = {
             playerCase: null,
-            caseContents: shuffleArray([0, 1, 2, 3]),
+            caseContents: shuffleArray(indices),
             openedCases: [],
             currentRound: 0,
-            jokeIndex: 0,
+            currentDealIsJoke: false,
+            currentDealRestIdx: null,
             noDodgeCount: gameState.noDodgeCount,
         };
 
@@ -1203,24 +1238,23 @@
        CASE SELECTION SCREEN
        ============================================================= */
     function buildCaseSelectScreen() {
-        // Build restaurant board
         const board = document.getElementById('restaurantBoard');
         board.innerHTML = '';
         CONFIG.restaurants.forEach((r) => {
             const item = document.createElement('div');
             item.className = 'board-item';
-            item.innerHTML = '<span class="board-emoji">' + r.emoji + '</span>' + r.name;
+            const nameText = r.subtitle ? r.name + '<br><small style="opacity:0.6">' + r.subtitle + '</small>' : r.name;
+            item.innerHTML = '<span class="board-emoji">' + r.emoji + '</span>' + nameText;
             board.appendChild(item);
         });
 
-        // Build briefcases
         const grid = document.getElementById('caseSelectGrid');
         grid.innerHTML = '';
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < TOTAL_CASES; i++) {
             const c = document.createElement('div');
             c.className = 'briefcase';
             c.innerHTML = '<span class="case-number">' + (i + 1) + '</span>';
-            c.onclick = () => selectCase(i);
+            c.onclick = (() => { const idx = i; return () => selectCase(idx); })();
             grid.appendChild(c);
         }
     }
@@ -1235,9 +1269,7 @@
        GAME SCREEN
        ============================================================= */
     function buildGameScreen() {
-        // Your case display
         document.getElementById('yourCaseNum').textContent = (gameState.playerCase + 1);
-
         updateGameBoard();
         updateGameCases();
     }
@@ -1249,13 +1281,13 @@
             const item = document.createElement('div');
             item.className = 'board-item';
 
-            // Check if this restaurant has been revealed (eliminated)
             const eliminated = gameState.openedCases.some(
                 caseIdx => gameState.caseContents[caseIdx] === i
             );
 
             if (eliminated) item.classList.add('eliminated');
-            item.innerHTML = '<span class="board-emoji">' + r.emoji + '</span>' + r.name;
+            const nameText = r.subtitle ? r.name + '<br><small style="opacity:0.6">' + r.subtitle + '</small>' : r.name;
+            item.innerHTML = '<span class="board-emoji">' + r.emoji + '</span>' + nameText;
             board.appendChild(item);
         });
     }
@@ -1264,13 +1296,11 @@
         const grid = document.getElementById('gameCasesGrid');
         grid.innerHTML = '';
 
-        for (let i = 0; i < 4; i++) {
-            const c = document.createElement('div');
-
+        for (let i = 0; i < TOTAL_CASES; i++) {
             if (i === gameState.playerCase) {
+                const c = document.createElement('div');
                 c.className = 'briefcase selected';
-                c.innerHTML =
-                    '<span class="case-number">' + (i + 1) + '</span>';
+                c.innerHTML = '<span class="case-number">' + (i + 1) + '</span>';
 
                 const wrapper = document.createElement('div');
                 wrapper.style.textAlign = 'center';
@@ -1283,6 +1313,7 @@
 
                 grid.appendChild(wrapper);
             } else if (gameState.openedCases.includes(i)) {
+                const c = document.createElement('div');
                 c.className = 'briefcase opened';
                 const restIdx = gameState.caseContents[i];
                 const rest = CONFIG.restaurants[restIdx];
@@ -1294,12 +1325,10 @@
                     '</div>';
                 grid.appendChild(c);
             } else {
+                const c = document.createElement('div');
                 c.className = 'briefcase';
                 c.innerHTML = '<span class="case-number">' + (i + 1) + '</span>';
-                c.onclick = (() => {
-                    const idx = i;
-                    return () => openCase(idx);
-                })();
+                c.onclick = (() => { const idx = i; return () => openCase(idx); })();
                 grid.appendChild(c);
             }
         }
@@ -1314,7 +1343,6 @@
         const restIdx = gameState.caseContents[caseIndex];
         const rest = CONFIG.restaurants[restIdx];
 
-        // Show overlay
         document.getElementById('openCaseNumber').textContent = 'Case ' + (caseIndex + 1);
         document.getElementById('openEmoji').textContent = rest.emoji;
         document.getElementById('openName').textContent = rest.name;
@@ -1324,53 +1352,92 @@
     function dismissCaseReveal() {
         document.getElementById('caseOpenOverlay').classList.remove('visible');
 
-        // Update game board and cases
         updateGameBoard();
         updateGameCases();
 
         gameState.currentRound++;
 
-        // Determine how many cases remain (excluding player's case)
-        const remainingCases = 4 - 1 - gameState.openedCases.length; // total - player - opened
+        // How many unopened cases remain (excluding player's)?
+        const remainingOther = TOTAL_CASES - 1 - gameState.openedCases.length;
 
-        if (remainingCases === 1) {
-            // Go to final choice (keep or swap)
+        if (remainingOther === 1) {
             buildFinalChoice();
             goToScreen('finalChoiceScreen');
         } else {
-            // Show a joke deal offer
             showDealOffer();
         }
     }
 
     /* =============================================================
-       DEAL OFFER
+       DEAL OFFER LOGIC
+       Round 1 = joke deal (McDonald's etc.)
+       Round 2+ = worst-ranked restaurant still on the board
+                  (excluding what's in her case)
        ============================================================= */
     function showDealOffer() {
-        const deal = CONFIG.jokeDeals[gameState.jokeIndex % CONFIG.jokeDeals.length];
-        gameState.jokeIndex++;
+        let dealEmoji, dealName, dealTagline;
 
-        document.getElementById('dealEmoji').textContent = deal.emoji;
-        document.getElementById('dealName').textContent = deal.name;
-        document.getElementById('dealTagline').textContent = deal.tagline;
+        if (gameState.currentRound === 1) {
+            // First deal: random joke
+            const joke = CONFIG.jokeDeals[Math.floor(Math.random() * CONFIG.jokeDeals.length)];
+            dealEmoji = joke.emoji;
+            dealName = joke.name;
+            dealTagline = joke.tagline;
+            gameState.currentDealIsJoke = true;
+            gameState.currentDealRestIdx = null;
+        } else {
+            // Subsequent deals: worst remaining restaurant (excluding her case)
+            let worstRank = -1;
+            let worstRestIdx = -1;
+
+            for (let caseIdx = 0; caseIdx < TOTAL_CASES; caseIdx++) {
+                if (caseIdx === gameState.playerCase) continue;
+                if (gameState.openedCases.includes(caseIdx)) continue;
+
+                const restIdx = gameState.caseContents[caseIdx];
+                const rank = CONFIG.restaurants[restIdx].rank;
+
+                if (rank > worstRank) {
+                    worstRank = rank;
+                    worstRestIdx = restIdx;
+                }
+            }
+
+            const rest = CONFIG.restaurants[worstRestIdx];
+            dealEmoji = rest.emoji;
+            dealName = rest.name;
+            dealTagline = "The Banker thinks this is a fair deal...";
+            gameState.currentDealIsJoke = false;
+            gameState.currentDealRestIdx = worstRestIdx;
+        }
+
+        document.getElementById('dealEmoji').textContent = dealEmoji;
+        document.getElementById('dealName').textContent = dealName;
+        document.getElementById('dealTagline').textContent = dealTagline;
 
         goToScreen('dealScreen');
 
         // Reset phone animation
         const phone = document.getElementById('phoneIcon');
         phone.style.animation = 'none';
-        phone.offsetHeight; // trigger reflow
+        phone.offsetHeight;
         phone.style.animation = '';
     }
 
     function acceptDeal() {
-        // Funny rejection — she doesn't actually get the bad deal
-        const msg = CONFIG.dealAcceptMessages[
-            gameState.jokeIndex % CONFIG.dealAcceptMessages.length
-        ];
-        alert(msg);
-        // Send back to game
-        noDeal();
+        if (gameState.currentDealIsJoke) {
+            // Can't actually accept a joke deal
+            alert(CONFIG.jokeAcceptMessage);
+            noDeal();
+        } else {
+            // Accept the real deal — go to that restaurant
+            const rest = CONFIG.restaurants[gameState.currentDealRestIdx];
+            document.getElementById('revealEmoji').textContent = rest.emoji;
+            document.getElementById('revealName').textContent = rest.name;
+            document.getElementById('revealDesc').textContent = rest.description;
+            goToScreen('revealScreen');
+            launchConfetti();
+        }
     }
 
     function noDeal() {
@@ -1385,9 +1452,8 @@
         const container = document.getElementById('finalCases');
         container.innerHTML = '';
 
-        // Find the remaining unopened case (not player's)
         let otherCase = -1;
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < TOTAL_CASES; i++) {
             if (i !== gameState.playerCase && !gameState.openedCases.includes(i)) {
                 otherCase = i;
                 break;
@@ -1420,22 +1486,14 @@
             '<div class="case-label">Case ' + (otherCase + 1) + '</div>';
         container.appendChild(otherOption);
 
-        // Store other case for swap logic
         gameState.otherCase = otherCase;
     }
 
     function finalDecision(choice) {
-        let finalCaseIndex;
-        if (choice === 'keep') {
-            finalCaseIndex = gameState.playerCase;
-        } else {
-            finalCaseIndex = gameState.otherCase;
-        }
-
+        const finalCaseIndex = choice === 'keep' ? gameState.playerCase : gameState.otherCase;
         const restIdx = gameState.caseContents[finalCaseIndex];
         const rest = CONFIG.restaurants[restIdx];
 
-        // Show reveal
         document.getElementById('revealEmoji').textContent = rest.emoji;
         document.getElementById('revealName').textContent = rest.name;
         document.getElementById('revealDesc').textContent = rest.description;
@@ -1457,7 +1515,7 @@
             '#ffffff', '#ffb6c1',
         ];
 
-        for (let i = 0; i < 80; i++) {
+        for (let i = 0; i < 100; i++) {
             const piece = document.createElement('div');
             piece.className = 'confetti-piece';
             piece.style.left = Math.random() * 100 + '%';
@@ -1470,10 +1528,7 @@
             container.appendChild(piece);
         }
 
-        // Clean up after animation
-        setTimeout(() => {
-            container.innerHTML = '';
-        }, 6000);
+        setTimeout(() => { container.innerHTML = ''; }, 6000);
     }
 
     /* =============================================================
@@ -1481,12 +1536,9 @@
        ============================================================= */
     function playAgain() {
         gameState.noDodgeCount = 0;
-
-        // Reset No button
         const noBtn = document.getElementById('noBtn');
         noBtn.style = '';
         noBtn.textContent = 'No';
-
         initGame();
         goToScreen('caseSelectScreen');
     }
