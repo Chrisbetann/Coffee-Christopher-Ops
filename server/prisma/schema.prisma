@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id         Int        @id @default(autoincrement())
+  name       String     @db.VarChar(100)
+  sort_order Int        @default(0)
+  created_at DateTime   @default(now())
+  items      MenuItem[]
+}
+
+model MenuItem {
+  id          Int         @id @default(autoincrement())
+  category_id Int
+  name        String      @db.VarChar(150)
+  description String?
+  price       Decimal     @db.Decimal(8, 2)
+  image_url   String?     @db.VarChar(255)
+  available   Boolean     @default(true)
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  category    Category    @relation(fields: [category_id], references: [id])
+  modifiers   Modifier[]
+  order_items OrderItem[]
+}
+
+model Modifier {
+  id         Int      @id @default(autoincrement())
+  item_id    Int
+  name       String   @db.VarChar(100)
+  options    Json
+  created_at DateTime @default(now())
+  item       MenuItem @relation(fields: [item_id], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  order_num  String      @unique @db.VarChar(10)
+  status     OrderStatus @default(sent)
+  subtotal   Decimal     @db.Decimal(8, 2)
+  tax        Decimal     @db.Decimal(8, 2)
+  total      Decimal     @db.Decimal(8, 2)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  items      OrderItem[]
+}
+
+enum OrderStatus {
+  sent
+  preparing
+  ready
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  order_id   Int
+  item_id    Int
+  quantity   Int      @default(1)
+  unit_price Decimal  @db.Decimal(8, 2)
+  modifiers  Json?
+  order      Order    @relation(fields: [order_id], references: [id])
+  item       MenuItem @relation(fields: [item_id], references: [id])
+}
+
+model Ingredient {
+  id               Int        @id @default(autoincrement())
+  name             String     @db.VarChar(150)
+  unit             String     @db.VarChar(50)
+  count            Decimal    @default(0) @db.Decimal(8, 2)
+  par_level        Decimal    @db.Decimal(8, 2)
+  supplier         String?    @db.VarChar(150)
+  supplier_contact String?    @db.VarChar(150)
+  cost_per_unit    Decimal?   @db.Decimal(8, 2)
+  created_at       DateTime   @default(now())
+  updated_at       DateTime   @updatedAt
+  audit_logs       AuditLog[]
+}
+
+model AuditLog {
+  id            Int        @id @default(autoincrement())
+  ingredient_id Int
+  old_count     Decimal    @db.Decimal(8, 2)
+  new_count     Decimal    @db.Decimal(8, 2)
+  changed_by    String     @db.VarChar(100)
+  changed_at    DateTime   @default(now())
+  ingredient    Ingredient @relation(fields: [ingredient_id], references: [id])
+}
+
+model Admin {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique @db.VarChar(150)
+  password_hash String   @db.VarChar(255)
+  created_at    DateTime @default(now())
+}
