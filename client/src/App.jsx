@@ -1,0 +1,46 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
+import MenuHome          from './pages/customer/MenuHome';
+import ItemDetail        from './pages/customer/ItemDetail';
+import Cart              from './pages/customer/Cart';
+import OrderConfirmation from './pages/customer/OrderConfirmation';
+import OrderStatus       from './pages/customer/OrderStatus';
+
+import Login             from './pages/admin/Login';
+import Dashboard         from './pages/admin/Dashboard';
+import OrderQueue        from './pages/admin/OrderQueue';
+import MenuManagement    from './pages/admin/MenuManagement';
+import SalesDashboard    from './pages/admin/SalesDashboard';
+import InventoryTracking from './pages/admin/InventoryTracking';
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Customer routes */}
+            <Route path="/"            element={<Navigate to="/menu" replace />} />
+            <Route path="/menu"        element={<MenuHome />} />
+            <Route path="/menu/item/:id" element={<ItemDetail />} />
+            <Route path="/cart"        element={<Cart />} />
+            <Route path="/order/:id/confirmed" element={<OrderConfirmation />} />
+            <Route path="/order/:id"   element={<OrderStatus />} />
+
+            {/* Admin routes */}
+            <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin"       element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="/admin/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/admin/orders"    element={<ProtectedRoute><OrderQueue /></ProtectedRoute>} />
+            <Route path="/admin/menu"      element={<ProtectedRoute><MenuManagement /></ProtectedRoute>} />
+            <Route path="/admin/sales"     element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
+            <Route path="/admin/inventory" element={<ProtectedRoute><InventoryTracking /></ProtectedRoute>} />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
+    </AuthProvider>
+  );
+}
