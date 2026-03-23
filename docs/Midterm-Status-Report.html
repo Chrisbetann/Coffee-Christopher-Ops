@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mid-Project Status Report – Coffee Christopher Ops Suite</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #111; background: #fff; padding: 0; }
+  .page { width: 8.5in; min-height: 11in; margin: 0 auto; padding: 1in 1in 1in 1in; }
+  h1 { font-size: 17pt; text-align: center; margin-bottom: 4px; }
+  .subtitle { text-align: center; font-size: 11pt; color: #444; margin-bottom: 2px; }
+  .divider { border: none; border-top: 2px solid #6B3F1E; margin: 14px 0; }
+  .thin-divider { border: none; border-top: 1px solid #ccc; margin: 10px 0; }
+  h2 { font-size: 13pt; color: #6B3F1E; margin: 16px 0 6px 0; border-bottom: 1px solid #C9A96E; padding-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+  h3 { font-size: 11.5pt; margin: 10px 0 4px 0; color: #1A0F08; }
+  p { margin-bottom: 7px; line-height: 1.55; }
+  ul, ol { margin: 4px 0 8px 22px; }
+  li { margin-bottom: 4px; line-height: 1.5; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 12px 0; font-size: 10.5pt; }
+  th { background: #6B3F1E; color: #fff; padding: 5px 8px; text-align: left; }
+  td { border: 1px solid #ddd; padding: 5px 8px; vertical-align: top; }
+  tr:nth-child(even) td { background: #fdf8f2; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9.5pt; font-weight: bold; }
+  .badge-done { background: #d4edda; color: #155724; }
+  .badge-pending { background: #fff3cd; color: #856404; }
+  .badge-new { background: #cce5ff; color: #004085; }
+  .info-block { background: #fdf8f2; border-left: 4px solid #6B3F1E; padding: 8px 12px; margin: 8px 0; font-size: 11pt; }
+  .problem-box { background: #fff8f0; border: 1px solid #f0c080; border-radius: 5px; padding: 8px 12px; margin-bottom: 8px; }
+  .problem-title { font-weight: bold; color: #8B4513; }
+  .problem-fix { color: #2d6a2d; font-style: italic; }
+
+  /* GUI Mockup Styles */
+  .mockup-container { margin: 10px 0 14px 0; }
+  .mockup-label { font-size: 9pt; color: #666; text-align: center; margin-top: 4px; font-style: italic; }
+  .mockup { border: 2px solid #6B3F1E; border-radius: 6px; background: #F5EFE6; overflow: hidden; font-family: Arial, sans-serif; font-size: 9pt; }
+  .mockup-header { background: #6B3F1E; color: #F5EFE6; padding: 6px 10px; font-weight: bold; font-size: 10pt; display: flex; justify-content: space-between; align-items: center; }
+  .mockup-nav { background: #1A0F08; color: #C9A96E; padding: 4px 10px; font-size: 8.5pt; display: flex; gap: 14px; }
+  .mockup-body { padding: 8px 10px; }
+  .mockup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 6px 0; }
+  .mockup-card { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 6px 8px; }
+  .mockup-card .name { font-weight: bold; font-size: 9pt; color: #1A0F08; }
+  .mockup-card .price { color: #6B3F1E; font-weight: bold; font-size: 9pt; }
+  .mockup-card .desc { font-size: 8pt; color: #777; }
+  .mockup-kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 5px 0; }
+  .mockup-kpi-card { background: #fff; border: 1px solid #C9A96E; border-radius: 4px; padding: 5px 7px; text-align: center; }
+  .mockup-kpi-card .kpi-val { font-size: 13pt; font-weight: bold; color: #6B3F1E; }
+  .mockup-kpi-card .kpi-label { font-size: 7.5pt; color: #666; }
+  .mockup-row { display: flex; gap: 6px; margin-bottom: 6px; }
+  .mockup-sidebar { width: 100px; background: #1A0F08; color: #C9A96E; padding: 8px; border-radius: 3px; font-size: 8pt; line-height: 1.8; }
+  .mockup-main { flex: 1; }
+  .mockup-stars { color: #C9A96E; font-size: 11pt; }
+  .mockup-review-card { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 6px 8px; margin-bottom: 4px; }
+  .cat-pill { display: inline-block; background: #6B3F1E; color: #fff; border-radius: 12px; padding: 2px 8px; font-size: 8pt; margin: 2px; }
+  .btn-mock { display: inline-block; background: #6B3F1E; color: #fff; padding: 3px 10px; border-radius: 3px; font-size: 8.5pt; }
+  .progress-bar { display: flex; align-items: center; margin: 6px 0; gap: 4px; font-size: 8pt; }
+  .step { background: #6B3F1E; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+  .step-line { flex: 1; height: 2px; background: #ccc; }
+  .step-inactive { background: #ccc; color: #666; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+  .week-row td:first-child { font-weight: bold; white-space: nowrap; }
+
+  @media print {
+    body { padding: 0; }
+    .page { margin: 0; padding: 0.75in; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ======== PAGE 1 ======== -->
+<div class="page">
+
+  <h1>Mid-Project Status Report</h1>
+  <p class="subtitle"><strong>Project:</strong> Coffee Christopher Ops Suite</p>
+  <p class="subtitle"><strong>Course:</strong> CSIS 4903 – Capstone Project for Computer Science &nbsp;|&nbsp; Nova Southeastern University</p>
+  <p class="subtitle"><strong>Author:</strong> Christopher Betancourt &nbsp;|&nbsp; <strong>Date:</strong> March 23, 2026</p>
+  <hr class="divider"/>
+
+  <!-- PROJECT OVERVIEW -->
+  <h2>1. Project Overview</h2>
+  <p>
+    The <strong>Coffee Christopher Ops Suite</strong> is a full-stack, QR-code-based digital ordering and operations management
+    system designed for a coffee shop environment. Customers scan a QR code to browse the menu, customize items, and place
+    orders from their phones. Staff manage the order queue, menu, inventory, and view sales analytics through a
+    password-protected admin dashboard. The system is built as a monorepo with a React frontend and a Node.js/Express backend
+    connected to a PostgreSQL database hosted on Supabase.
+  </p>
+
+  <div class="info-block">
+    <strong>Repository:</strong> github.com/Chrisbetann/Coffee-Christopher-Ops &nbsp;|&nbsp;
+    <strong>Sprint Progress:</strong> Weeks 9–13 complete (5 of 13 sprints) &nbsp;|&nbsp;
+    <strong>Total Source Files:</strong> 38 &nbsp;|&nbsp; <strong>Lines of Code:</strong> ~2,800
+  </div>
+
+  <!-- TOOLS & TECHNOLOGIES -->
+  <h2>2. Tools &amp; Languages Used</h2>
+  <table>
+    <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+    <tr><td>Frontend Framework</td><td>React 18 + Vite</td><td>UI rendering and fast development server</td></tr>
+    <tr><td>Styling</td><td>Tailwind CSS</td><td>Utility-first CSS with custom brand color theme</td></tr>
+    <tr><td>Charts</td><td>Recharts</td><td>Bar, Line, and Pie chart visualizations in sales dashboard</td></tr>
+    <tr><td>HTTP Client</td><td>Axios</td><td>API calls from frontend to backend</td></tr>
+    <tr><td>Routing</td><td>React Router v6</td><td>Page navigation (customer + admin routes)</td></tr>
+    <tr><td>State Management</td><td>React Context API</td><td>Global cart and authentication state</td></tr>
+    <tr><td>Backend</td><td>Node.js + Express.js</td><td>REST API server</td></tr>
+    <tr><td>ORM</td><td>Prisma 5.6</td><td>Type-safe database queries and migrations</td></tr>
+    <tr><td>Validation</td><td>Zod</td><td>Schema validation on API request bodies</td></tr>
+    <tr><td>Authentication</td><td>JWT (jsonwebtoken)</td><td>Admin login with 8-hour token expiry</td></tr>
+    <tr><td>Password Hashing</td><td>bcryptjs</td><td>Secure admin password storage</td></tr>
+    <tr><td>Database</td><td>PostgreSQL via Supabase</td><td>Cloud-hosted relational database (free tier)</td></tr>
+    <tr><td>Deployment – Frontend</td><td>Vercel</td><td>Hosting React app (planned Week 19)</td></tr>
+    <tr><td>Deployment – Backend</td><td>Railway</td><td>Hosting Express server (planned Week 19)</td></tr>
+    <tr><td>Version Control</td><td>Git + GitHub</td><td>Source control and sprint tracking</td></tr>
+    <tr><td>IDE</td><td>VS Code + Claude Code</td><td>Development environment and AI assistance</td></tr>
+  </table>
+
+  <!-- CURRENT PROGRESS -->
+  <h2>3. Current Progress</h2>
+  <table>
+    <tr><th>Sprint</th><th>Feature</th><th>Status</th></tr>
+    <tr><td>Week 9</td><td>Dynamic menu browsing by category + item detail page with modifiers</td><td><span class="badge badge-done">Complete</span></td></tr>
+    <tr><td>Week 10</td><td>Cart, order submission, order confirmation, real-time order status tracking</td><td><span class="badge badge-done">Complete</span></td></tr>
+    <tr><td>Week 11</td><td>Admin menu CRUD (create, edit, delete, availability toggle)</td><td><span class="badge badge-done">Complete</span></td></tr>
+    <tr><td>Week 12</td><td>Sales dashboard with revenue charts, top items, and order volume trends</td><td><span class="badge badge-done">Complete</span></td></tr>
+    <tr><td>Week 13</td><td>Inventory tracking with par levels, low-stock alerts, and audit log</td><td><span class="badge badge-done">Complete</span></td></tr>
+    <tr><td>Weeks 14–21</td><td>Review system, testing, deployment, documentation, final presentation</td><td><span class="badge badge-pending">In Progress</span></td></tr>
+  </table>
+
+  <!-- GUI MOCKUPS -->
+  <h2>4. GUI Mockups</h2>
+
+  <!-- Mockup 1: Customer Menu -->
+  <div class="mockup-container">
+    <div class="mockup">
+      <div class="mockup-header">
+        <span>☕ Coffee Christopher</span>
+        <span>🛒 Cart (2)</span>
+      </div>
+      <div class="mockup-body">
+        <div style="margin-bottom:5px;">
+          <span class="cat-pill">All</span>
+          <span class="cat-pill">☕ Coffee</span>
+          <span class="cat-pill">🧃 Refreshers</span>
+          <span class="cat-pill">⚡ Energy</span>
+          <span class="cat-pill">🥐 Breakfast</span>
+          <span class="cat-pill">🍟 Hot Food</span>
+        </div>
+        <div class="mockup-grid">
+          <div class="mockup-card"><div class="name">Classic Latte</div><div class="price">$5.50</div><div class="desc">Espresso + steamed milk</div></div>
+          <div class="mockup-card"><div class="name">Iced Coffee</div><div class="price">$4.50</div><div class="desc">Cold brew over ice</div></div>
+          <div class="mockup-card"><div class="name">Hot Chocolate</div><div class="price">$4.00</div><div class="desc">Rich cocoa blend</div></div>
+          <div class="mockup-card"><div class="name">Dragon Refresher</div><div class="price">$5.00</div><div class="desc">Fruity + energizing</div></div>
+          <div class="mockup-card"><div class="name">Croissant</div><div class="price">$3.50</div><div class="desc">Buttery, flaky pastry</div></div>
+          <div class="mockup-card"><div class="name">Chicken Nuggets</div><div class="price">$7.00</div><div class="desc">6-piece crispy nuggets</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="mockup-label">Fig. 1 – Customer Menu Page (QR Landing Page)</div>
+  </div>
+
+  <!-- Mockup 2: Admin Dashboard -->
+  <div class="mockup-container">
+    <div class="mockup">
+      <div class="mockup-header"><span>Admin Dashboard</span><span style="font-size:8.5pt;">admin@coffeechristopher.com</span></div>
+      <div class="mockup-row" style="padding:8px 10px 0 10px;">
+        <div class="mockup-sidebar">
+          Dashboard<br/>Order Queue<br/>Menu Mgmt<br/>Sales<br/>Inventory<br/><br/><span style="color:#f88;">Logout</span>
+        </div>
+        <div class="mockup-main">
+          <div class="mockup-kpi">
+            <div class="mockup-kpi-card"><div class="kpi-val">$312</div><div class="kpi-label">Today Revenue</div></div>
+            <div class="mockup-kpi-card"><div class="kpi-val">47</div><div class="kpi-label">Orders Today</div></div>
+            <div class="mockup-kpi-card"><div class="kpi-val">3</div><div class="kpi-label">Pending</div></div>
+            <div class="mockup-kpi-card"><div class="kpi-val" style="color:#c0392b;">4</div><div class="kpi-label">Low Stock ⚠️</div></div>
+          </div>
+          <div style="background:#fff;border:1px solid #ddd;border-radius:4px;padding:6px 8px;font-size:8.5pt;">
+            <strong>Recent Orders</strong><br/>
+            <span style="color:#e67e22;">● #A4F2C1</span> – Iced Coffee, Croissant – <em>Preparing...</em><br/>
+            <span style="color:#27ae60;">● #B7K9D3</span> – Classic Latte x2 – <em>Ready ✓</em><br/>
+            <span style="color:#3498db;">● #C2X5R8</span> – Fries, Hot Dog – <em>Sent</em>
+          </div>
+        </div>
+      </div>
+      <div style="height:8px;"></div>
+    </div>
+    <div class="mockup-label">Fig. 2 – Admin Dashboard with KPI Cards and Order Summary</div>
+  </div>
+
+</div><!-- end page 1 -->
+
+
+<!-- ======== PAGE 2 ======== -->
+<div class="page page-break">
+
+  <!-- Mockup 3: Review System (New Feature) -->
+  <h2>5. New Deliverable: Customer Review System</h2>
+  <p>
+    A customer review system will be added as a new deliverable not included in the original proposal.
+    After an order is marked <strong>Ready</strong>, customers will be prompted to leave a star rating (1–5) and
+    an optional written comment for each item they ordered. Reviews will be displayed publicly on item detail
+    pages and moderated by admin. This feature directly improves customer trust and gives the shop owner
+    actionable feedback on product quality.
+  </p>
+
+  <!-- Mockup: Review Submission -->
+  <div class="mockup-container">
+    <div class="mockup">
+      <div class="mockup-header"><span>☕ Coffee Christopher – Leave a Review</span></div>
+      <div class="mockup-body">
+        <p style="font-size:9pt;margin-bottom:5px;">How was your <strong>Classic Latte</strong>?</p>
+        <div class="mockup-stars">★★★★☆</div>
+        <div style="background:#fff;border:1px solid #ccc;border-radius:3px;padding:4px 6px;font-size:8.5pt;color:#888;margin:5px 0;width:100%;">Write a comment (optional)...</div>
+        <span class="btn-mock">Submit Review</span>
+        <hr class="thin-divider"/>
+        <strong style="font-size:9pt;">Recent Reviews</strong>
+        <div class="mockup-review-card">
+          <div class="mockup-stars" style="font-size:9.5pt;">★★★★★</div>
+          <div style="font-size:8.5pt;color:#333;">"Best iced coffee I've had – perfectly sweet!"</div>
+          <div style="font-size:7.5pt;color:#999;">— Order #A4F2C1 &nbsp;|&nbsp; March 20, 2026</div>
+        </div>
+        <div class="mockup-review-card">
+          <div class="mockup-stars" style="font-size:9.5pt;">★★★★☆</div>
+          <div style="font-size:8.5pt;color:#333;">"Great latte, would love a larger size option."</div>
+          <div style="font-size:7.5pt;color:#999;">— Order #B7K9D3 &nbsp;|&nbsp; March 21, 2026</div>
+        </div>
+      </div>
+    </div>
+    <div class="mockup-label">Fig. 3 – New Feature: Customer Review Submission &amp; Display on Item Page</div>
+  </div>
+
+  <!-- PROBLEMS FACED -->
+  <h2>6. Problems Encountered</h2>
+  <p>Several common challenges were encountered throughout development, particularly as this project represents the developer's first experience building a full-stack application with a relational database.</p>
+
+  <div class="problem-box">
+    <div class="problem-title">Problem 1 – CORS Errors Blocking Frontend-to-Backend Communication</div>
+    <p>When the React frontend first attempted to fetch menu data from the Express server, the browser blocked all requests with: <em>"Access to XMLHttpRequest has been blocked by CORS policy."</em> This was caused by the Express server not having cross-origin resource sharing configured.</p>
+    <div class="problem-fix">Fix: Installed the <code>cors</code> npm package and added <code>app.use(cors({ origin: process.env.CLIENT_URL }))</code> in <code>server/index.js</code>. Also added the correct <code>CLIENT_URL</code> to the <code>.env</code> file.</div>
+  </div>
+
+  <div class="problem-box">
+    <div class="problem-title">Problem 2 – Prisma Migration Drift After Schema Changes</div>
+    <p>After modifying <code>schema.prisma</code> mid-development to add the <code>AuditLog</code> table, running <code>prisma migrate dev</code> failed with <em>"drift detected – the database schema is not in sync with the migration history."</em> This happened because the Supabase database had been manually altered during testing.</p>
+    <div class="problem-fix">Fix: Ran <code>prisma migrate reset</code> to wipe and re-apply all migrations cleanly, then re-ran <code>prisma db seed</code> to restore all seed data.</div>
+  </div>
+
+  <div class="problem-box">
+    <div class="problem-title">Problem 3 – Admin Session Lost on Every Page Refresh</div>
+    <p>After implementing JWT login, the admin was logged out every time the browser was refreshed. The token was being stored in a React state variable, which resets on reload.</p>
+    <div class="problem-fix">Fix: Moved token storage to <code>localStorage</code> and updated <code>AuthContext.jsx</code> to read the token from <code>localStorage</code> on initial mount using <code>useState(() =&gt; localStorage.getItem('token'))</code>.</div>
+  </div>
+
+  <div class="problem-box">
+    <div class="problem-title">Problem 4 – useEffect Causing an Infinite Re-Render Loop</div>
+    <p>The order queue page was constantly re-fetching and re-rendering in an endless loop, freezing the browser tab. An object (the headers config for Axios) was being created inside the component and passed into the <code>useEffect</code> dependency array, causing it to be re-evaluated as a new object on every render.</p>
+    <div class="problem-fix">Fix: Moved the Axios config object outside the component scope and used only primitive values (the token string) in the dependency array.</div>
+  </div>
+
+  <div class="problem-box">
+    <div class="problem-title">Problem 5 – Environment Variables Undefined in Vite Frontend</div>
+    <p>After setting <code>API_URL</code> in a <code>.env</code> file, accessing <code>process.env.API_URL</code> in the React code returned <code>undefined</code>. Vite does not use <code>process.env</code> the same way Create React App does.</p>
+    <div class="problem-fix">Fix: Renamed the variable to <code>VITE_API_URL</code> (Vite requires the <code>VITE_</code> prefix) and accessed it using <code>import.meta.env.VITE_API_URL</code> in the frontend code.</div>
+  </div>
+
+  <div class="problem-box">
+    <div class="problem-title">Problem 6 – React Router v6 Syntax Breaking Tutorial Code</div>
+    <p>Following online tutorials for React Router resulted in errors because most tutorials were written for v5, which uses <code>&lt;Switch&gt;</code> and <code>component={Page}</code>. React Router v6 replaced these with <code>&lt;Routes&gt;</code> and <code>element={&lt;Page /&gt;}</code>.</p>
+    <div class="problem-fix">Fix: Rewrote all route definitions following the official React Router v6 documentation and updated the <code>ProtectedRoute</code> wrapper component to use the v6 <code>Navigate</code> component instead of <code>Redirect</code>.</div>
+  </div>
+
+  <!-- CHANGES FROM PROPOSAL -->
+  <h2>7. Changes from Original Proposal</h2>
+  <table>
+    <tr><th>Item</th><th>Original Proposal</th><th>Current Status</th></tr>
+    <tr>
+      <td>Review System</td>
+      <td>Not included</td>
+      <td><span class="badge badge-new">Added</span> – Customers can rate and review items after order completion; admin can moderate reviews</td>
+    </tr>
+    <tr>
+      <td>Deployment Platform</td>
+      <td>Platform unspecified</td>
+      <td>Decided on <strong>Vercel</strong> (frontend) and <strong>Railway</strong> (backend) for free-tier hosting</td>
+    </tr>
+    <tr>
+      <td>Database Host</td>
+      <td>Local PostgreSQL</td>
+      <td>Moved to <strong>Supabase</strong> cloud PostgreSQL for remote accessibility and easier team testing</td>
+    </tr>
+    <tr>
+      <td>All other deliverables</td>
+      <td>As proposed</td>
+      <td><span class="badge badge-done">On Track</span> – Menu, ordering, admin, sales, inventory all delivered on schedule</td>
+    </tr>
+  </table>
+
+  <!-- WEEKLY SCHEDULE -->
+  <h2>8. Remaining Schedule – Weeks 14–21</h2>
+  <table>
+    <tr><th style="width:90px;">Week</th><th>Christopher Betancourt – Tasks</th></tr>
+    <tr>
+      <td>Week 14<br/><small>(Mar 30)</small></td>
+      <td>Design and implement the review system database schema — add <code>reviews</code> table to Prisma schema with fields for order ID, menu item ID, star rating (1–5), comment text, and timestamp. Write and test all backend API endpoints: <code>POST /api/reviews</code>, <code>GET /api/reviews/:itemId</code>, and <code>GET /api/admin/reviews</code>.</td>
+    </tr>
+    <tr>
+      <td>Week 15<br/><small>(Apr 6)</small></td>
+      <td>Build the customer-facing review submission UI. After an order reaches "Ready" status, the order status page will display a prompt for each purchased item with a 5-star selector and an optional comment field. Connect the form to the backend API using Axios and display a confirmation message on successful submission.</td>
+    </tr>
+    <tr>
+      <td>Week 16<br/><small>(Apr 13)</small></td>
+      <td>Add review display to item detail pages — show average star rating and recent comments from real customers. Build the admin review moderation panel in the admin dashboard where the administrator can view all submitted reviews, flag inappropriate content, and delete reviews that violate policy.</td>
+    </tr>
+    <tr>
+      <td>Week 17<br/><small>(Apr 20)</small></td>
+      <td>Conduct end-to-end integration testing across all modules: customer ordering flow, admin order queue, menu management, inventory tracking, sales dashboard, and the new review system. Document and fix all bugs found. Verify that all original acceptance criteria from the proposal are still met.</td>
+    </tr>
+    <tr>
+      <td>Week 18<br/><small>(Apr 27)</small></td>
+      <td>Polish the UI for both customer and admin views. Ensure full mobile responsiveness for the customer menu and ordering pages (primary use case is phone-based QR scanning). Improve loading states, error messages, and empty state displays throughout the application.</td>
+    </tr>
+    <tr>
+      <td>Week 19<br/><small>(May 4)</small></td>
+      <td>Deploy the production application — push the React frontend to Vercel and the Express backend to Railway. Configure all production environment variables, update CORS settings for the live domain, run final database migrations on Supabase, and verify the full ordering flow works end-to-end in the live environment.</td>
+    </tr>
+    <tr>
+      <td>Week 20<br/><small>(May 11)</small></td>
+      <td>Write final project documentation including a user guide for admin staff (how to manage orders, menu, and inventory), a technical README for the codebase, and a deployment guide. Update the proposal document to reflect all changes and new deliverables added during development.</td>
+    </tr>
+    <tr>
+      <td>Week 21<br/><small>(May 18)</small></td>
+      <td>Prepare and rehearse the final capstone presentation. Build a slide deck covering the project purpose, technology stack, architecture diagram, live demo walkthrough, problems solved, and lessons learned. Record a demo video as a backup. Submit all final deliverables to CSIS 4903.</td>
+    </tr>
+  </table>
+
+  <hr class="divider"/>
+  <p style="text-align:center;font-size:9.5pt;color:#666;">
+    Coffee Christopher Ops Suite &nbsp;|&nbsp; CSIS 4903 Capstone &nbsp;|&nbsp; Christopher Betancourt &nbsp;|&nbsp; Nova Southeastern University &nbsp;|&nbsp; March 23, 2026
+  </p>
+
+</div><!-- end page 2 -->
+
+</body>
+</html>
