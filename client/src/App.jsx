@@ -15,6 +15,7 @@ import OrderQueue        from './pages/admin/OrderQueue';
 import MenuManagement    from './pages/admin/MenuManagement';
 import SalesDashboard    from './pages/admin/SalesDashboard';
 import InventoryTracking from './pages/admin/InventoryTracking';
+import ReviewModeration  from './pages/admin/ReviewModeration';
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/admin/menu"      element={<ProtectedRoute><MenuManagement /></ProtectedRoute>} />
             <Route path="/admin/sales"     element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
             <Route path="/admin/inventory" element={<ProtectedRoute><InventoryTracking /></ProtectedRoute>} />
+            <Route path="/admin/reviews"   element={<ProtectedRoute><ReviewModeration /></ProtectedRoute>} />
           </Routes>
         </BrowserRouter>
       </CartProvider>

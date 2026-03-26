@@ -52,3 +52,9 @@ export const getAuditLog       = (id)     => api.get(`/inventory/${id}/log`);
 export const createIngredient  = (data)   => api.post('/inventory', data);
 export const updateIngredient  = (id, d)  => api.put(`/inventory/${id}`, d);
 export const deleteIngredient  = (id)     => api.delete(`/inventory/${id}`);
+
+// ── Reviews ──────────────────────────────────────────────────
+export const submitReview      = (data)      => api.post('/reviews', data);
+export const getItemReviews    = (itemId)    => api.get(`/reviews/${itemId}`);
+export const getAdminReviews   = ()          => api.get('/reviews/admin/all');
+export const deleteReview      = (id)        => api.delete(`/reviews/admin/${id}`);

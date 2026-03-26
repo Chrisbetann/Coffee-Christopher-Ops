@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getMenuItem } from '../../api';
+import { getMenuItem, getItemReviews } from '../../api';
 import { useCart } from '../../context/CartContext';
 
 export default function ItemDetail() {
@@ -12,8 +12,10 @@ export default function ItemDetail() {
   const [loading, setLoading]           = useState(true);
   const [quantity, setQuantity]         = useState(1);
   const [selectedMods, setSelectedMods] = useState({});
+  const [reviews, setReviews]           = useState({ reviews: [], avgRating: 0, count: 0 });
 
   useEffect(() => {
+    getItemReviews(id).then(({ data }) => setReviews(data)).catch(() => {});
     getMenuItem(id).then(({ data }) => {
       setItem(data);
       // Init each modifier to first option (or empty for multi-select)
@@ -108,6 +110,30 @@ export default function ItemDetail() {
             )}
           </div>
         ))}
+
+        {/* Reviews */}
+        {reviews.count > 0 && (
+          <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <p className="font-semibold text-brand-brown">Customer Reviews</p>
+              <div className="flex items-center gap-1">
+                <span className="text-yellow-400">{'★'.repeat(Math.round(reviews.avgRating))}{'☆'.repeat(5 - Math.round(reviews.avgRating))}</span>
+                <span className="text-sm text-gray-500">({reviews.avgRating}/5 from {reviews.count})</span>
+              </div>
+            </div>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {reviews.reviews.slice(0, 5).map((r) => (
+                <div key={r.id} className="border-t border-gray-100 pt-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-yellow-400 text-sm">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
+                    <span className="text-xs text-gray-400">#{r.order?.order_num}</span>
+                  </div>
+                  {r.comment && <p className="text-sm text-gray-600 mt-1">{r.comment}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Quantity */}
         <div className="bg-white rounded-xl p-4 shadow-sm mb-4 flex items-center justify-between">

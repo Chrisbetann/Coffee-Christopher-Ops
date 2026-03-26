@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getOrder } from '../../api';
+import { getOrder, submitReview } from '../../api';
 
 const STEPS = ['sent', 'preparing', 'ready'];
 const STEP_LABELS = { sent: 'Order Sent', preparing: 'Preparing', ready: 'Ready for Pickup!' };
@@ -10,8 +10,10 @@ const STEP_COLOR  = { sent: 'bg-yellow-400', preparing: 'bg-orange-400', ready: 
 export default function OrderStatus() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [order, setOrder] = useState(null);
-  const [error, setError] = useState('');
+  const [order, setOrder]           = useState(null);
+  const [error, setError]           = useState('');
+  const [reviewData, setReviewData] = useState({}); // { item_id: { rating, comment } }
+  const [reviewed, setReviewed]     = useState({});  // { item_id: true }
 
   async function fetchOrder() {
     try {
@@ -95,6 +97,60 @@ export default function OrderStatus() {
             <span>Total</span><span>${Number(order.total).toFixed(2)}</span>
           </div>
         </div>
+
+        {/* Review section (only when ready) */}
+        {order.status === 'ready' && (
+          <div className="bg-white rounded-2xl p-4 shadow-sm mb-6">
+            <p className="font-semibold text-brand-brown mb-3">Rate Your Items</p>
+            {order.items?.map((i) => {
+              const itemId = i.item_id;
+              const rd = reviewData[itemId] || { rating: 0, comment: '' };
+              const done = reviewed[itemId];
+
+              return (
+                <div key={i.id} className="border-t border-gray-100 py-3">
+                  <p className="text-sm font-medium text-brand-dark mb-2">{i.item?.name}</p>
+                  {done ? (
+                    <p className="text-green-600 text-sm">Thank you for your review!</p>
+                  ) : (
+                    <>
+                      <div className="flex gap-1 mb-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            onClick={() => setReviewData((prev) => ({ ...prev, [itemId]: { ...rd, rating: star } }))}
+                            className={`text-2xl ${star <= rd.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                          >
+                            ★
+                          </button>
+                        ))}
+                      </div>
+                      <input
+                        placeholder="Add a comment (optional)"
+                        value={rd.comment}
+                        onChange={(e) => setReviewData((prev) => ({ ...prev, [itemId]: { ...rd, comment: e.target.value } }))}
+                        className="w-full border border-brand-tan rounded-lg px-3 py-2 text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-brand-brown"
+                      />
+                      <button
+                        onClick={async () => {
+                          if (rd.rating === 0) return;
+                          try {
+                            await submitReview({ order_id: order.id, item_id: itemId, rating: rd.rating, comment: rd.comment || null });
+                            setReviewed((prev) => ({ ...prev, [itemId]: true }));
+                          } catch {}
+                        }}
+                        disabled={rd.rating === 0}
+                        className="bg-brand-brown text-white px-4 py-1.5 rounded-lg text-sm font-medium disabled:opacity-40"
+                      >
+                        Submit Review
+                      </button>
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {order.status === 'ready' ? (
           <button
