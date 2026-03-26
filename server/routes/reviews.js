@@ -13,6 +13,34 @@ const ReviewSchema = z.object({
   comment: z.string().max(500).optional().nullable(),
 });
 
+// GET /api/reviews/admin/all — all reviews for admin moderation
+// NOTE: must be defined BEFORE /:itemId or Express will match 'admin' as itemId
+router.get('/admin/all', requireAuth, async (req, res) => {
+  try {
+    const reviews = await prisma.review.findMany({
+      orderBy: { created_at: 'desc' },
+      include: {
+        item: { select: { name: true } },
+        order: { select: { order_num: true } },
+      },
+    });
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch reviews' });
+  }
+});
+
+// DELETE /api/reviews/admin/:id — admin deletes a review
+// NOTE: must be defined BEFORE /:itemId
+router.delete('/admin/:id', requireAuth, async (req, res) => {
+  try {
+    await prisma.review.delete({ where: { id: parseInt(req.params.id) } });
+    res.json({ message: 'Review deleted' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete review' });
+  }
+});
+
 // POST /api/reviews — customer submits a review
 router.post('/', async (req, res) => {
   const parse = ReviewSchema.safeParse(req.body);
@@ -64,30 +92,5 @@ router.get('/:itemId', async (req, res) => {
   }
 });
 
-// GET /api/admin/reviews — all reviews for admin moderation
-router.get('/admin/all', requireAuth, async (req, res) => {
-  try {
-    const reviews = await prisma.review.findMany({
-      orderBy: { created_at: 'desc' },
-      include: {
-        item: { select: { name: true } },
-        order: { select: { order_num: true } },
-      },
-    });
-    res.json(reviews);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch reviews' });
-  }
-});
-
-// DELETE /api/reviews/admin/:id — admin deletes a review
-router.delete('/admin/:id', requireAuth, async (req, res) => {
-  try {
-    await prisma.review.delete({ where: { id: parseInt(req.params.id) } });
-    res.json({ message: 'Review deleted' });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to delete review' });
-  }
-});
 
 module.exports = router;
