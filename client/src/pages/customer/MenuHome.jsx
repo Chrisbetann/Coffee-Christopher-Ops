@@ -20,12 +20,19 @@ export default function MenuHome() {
   const [loading, setLoading]       = useState(true);
   const { itemCount } = useCart();
 
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     async function load() {
-      const [catRes, itemRes] = await Promise.all([getCategories(), getMenuItems()]);
-      setCategories(catRes.data);
-      setItems(itemRes.data);
-      setLoading(false);
+      try {
+        const [catRes, itemRes] = await Promise.all([getCategories(), getMenuItems()]);
+        setCategories(catRes.data);
+        setItems(itemRes.data);
+      } catch (err) {
+        setError('Unable to load menu. Please check your connection and try again.');
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, []);
@@ -35,6 +42,12 @@ export default function MenuHome() {
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen">
       <p className="text-brand-brown text-lg">Loading menu…</p>
+    </div>
+  );
+
+  if (error) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <p className="text-red-600 text-lg text-center px-4">{error}</p>
     </div>
   );
 
