@@ -156,7 +156,7 @@ A full sales analytics dashboard with period selectors, revenue charts, top-sell
 ---
 
 ## Week 13 — Inventory: Ingredients + Thresholds + Low-Stock Alerts
-**Date:** 04/02/2026
+**Date:** 03/26/2026 *(completed ahead of schedule)*
 **Status:** ✅ Complete — **Release 3 (Inventory + Stability)**
 
 ### What Was Built
@@ -212,6 +212,33 @@ At seed time, 4 ingredients are intentionally below par to demonstrate alert fun
 
 ---
 
+## Week 14 — Customer Review System
+**Date:** 03/26/2026
+**Status:** ✅ Complete
+
+### What Was Built
+A customer review system that allows customers to rate and comment on items they ordered. Reviews are displayed publicly on item detail pages and can be moderated by admins.
+
+### Features Delivered
+| Feature | Status | Acceptance Criteria Met |
+|---------|--------|------------------------|
+| Review Submission | ✅ | Customers can rate (1–5 stars) and comment after order completion |
+| Review Display | ✅ | Item detail pages show average rating and recent reviews |
+| Duplicate Prevention | ✅ | One review per item per order enforced |
+| Admin Moderation | ✅ | Admin can view all reviews and delete inappropriate ones |
+
+### Technical Implementation
+- **Frontend:** Review submission form on `OrderStatus.jsx` (appears when status = ready)
+- **Frontend:** Review display section on `ItemDetail.jsx` with star ratings and comments
+- **Frontend:** `ReviewModeration.jsx` — admin page to view and delete reviews
+- **Backend:** `POST /api/reviews` — submit review (validates order is ready, item was ordered, no duplicates)
+- **Backend:** `GET /api/reviews/:itemId` — public endpoint returns reviews + average rating
+- **Backend:** `GET /api/reviews/admin/all` — all reviews for admin moderation
+- **Backend:** `DELETE /api/reviews/admin/:id` — admin deletes a review
+- **Database:** `reviews` table with FK to orders and menu_items
+
+---
+
 ## Overall Technical Summary
 
 ### Architecture
@@ -253,9 +280,10 @@ Customer Browser (React)          Admin Browser (React)
 | order_items | Line items per order with modifiers |
 | ingredients | Inventory items with par levels |
 | audit_log | Count change history |
+| reviews | Customer ratings and comments |
 | admins | Admin accounts (hashed passwords) |
 
-### API Endpoints (21 total)
+### API Endpoints (25 total)
 **Public (no auth):**
 - `GET /api/menu/categories`
 - `GET /api/menu/items`
@@ -277,6 +305,10 @@ Customer Browser (React)          Admin Browser (React)
 - `GET /api/dashboard/sales`
 - `GET /api/dashboard/top-items`
 - `GET /api/dashboard/volume`
+- `POST /api/reviews`
+- `GET /api/reviews/:itemId`
+- `GET /api/reviews/admin/all`
+- `DELETE /api/reviews/admin/:id`
 
 ---
 
@@ -294,5 +326,5 @@ Customer Browser (React)          Admin Browser (React)
 ## Repository
 **GitHub:** https://github.com/Chrisbetann/Coffee-Christopher-Ops
 **Branch:** main
-**Total files:** 38 source files
-**Total lines of code:** ~2,800
+**Total files:** 41 source files
+**Total lines of code:** ~3,100

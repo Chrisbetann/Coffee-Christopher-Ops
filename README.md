@@ -60,7 +60,7 @@ npm run db:seed       # Seeds menu, ingredients, and admin account
 ### 4. Start development servers
 
 ```bash
-# Terminal 1 — Backend (port 5000)
+# Terminal 1 — Backend (port 5001)
 npm run dev:server
 
 # Terminal 2 — Frontend (port 5173)
@@ -76,7 +76,7 @@ Then open `http://localhost:5173`
 | Field | Value |
 |-------|-------|
 | Email | admin@coffeechristopher.com |
-| Password | *(set during seed)* |
+| Password | Benji14141! |
 
 ---
 
@@ -100,6 +100,7 @@ Then open `http://localhost:5173`
 | `/admin/menu` | Menu CRUD + availability toggles |
 | `/admin/sales` | Sales dashboard — day/week/month/year |
 | `/admin/inventory` | Inventory tracking + audit log |
+| `/admin/reviews` | Review moderation |
 
 ---
 
@@ -111,6 +112,8 @@ Then open `http://localhost:5173`
 - `GET /api/menu/items/:id`
 - `POST /api/orders`
 - `GET /api/orders/:id`
+- `POST /api/reviews`
+- `GET /api/reviews/:itemId`
 
 ### Admin (JWT required)
 - `POST /api/admin/login`
@@ -125,9 +128,11 @@ Then open `http://localhost:5173`
 - `GET /api/dashboard/sales`
 - `GET /api/dashboard/top-items`
 - `GET /api/dashboard/volume`
+- `GET /api/reviews/admin/all`
+- `DELETE /api/reviews/admin/:id`
 
 ---
 
 ## Deployment
 
-See **Week 7 architecture deliverable** in `/Deliverables` for full Supabase + Railway + Vercel deployment steps.
+See the sprint deliverables in `/docs` for full architecture and deployment details.
