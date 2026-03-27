@@ -8,6 +8,7 @@ import ItemDetail        from './pages/customer/ItemDetail';
 import Cart              from './pages/customer/Cart';
 import OrderConfirmation from './pages/customer/OrderConfirmation';
 import OrderStatus       from './pages/customer/OrderStatus';
+import LoyaltyJoin      from './pages/customer/LoyaltyJoin';
 
 import Login             from './pages/admin/Login';
 import Dashboard         from './pages/admin/Dashboard';
@@ -16,6 +17,7 @@ import MenuManagement    from './pages/admin/MenuManagement';
 import SalesDashboard    from './pages/admin/SalesDashboard';
 import InventoryTracking     from './pages/admin/InventoryTracking';
 import PromotionsManagement from './pages/admin/PromotionsManagement';
+import LoyaltyMembers       from './pages/admin/LoyaltyMembers';
 
 export default function App() {
   return (
@@ -30,6 +32,7 @@ export default function App() {
             <Route path="/cart"        element={<Cart />} />
             <Route path="/order/:id/confirmed" element={<OrderConfirmation />} />
             <Route path="/order/:id"   element={<OrderStatus />} />
+            <Route path="/join"        element={<LoyaltyJoin />} />
 
             {/* Admin routes */}
             <Route path="/admin/login" element={<Login />} />
@@ -40,6 +43,7 @@ export default function App() {
             <Route path="/admin/sales"     element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
             <Route path="/admin/inventory"  element={<ProtectedRoute><InventoryTracking /></ProtectedRoute>} />
             <Route path="/admin/promotions" element={<ProtectedRoute><PromotionsManagement /></ProtectedRoute>} />
+            <Route path="/admin/loyalty"    element={<ProtectedRoute><LoyaltyMembers /></ProtectedRoute>} />
           </Routes>
         </BrowserRouter>
       </CartProvider>

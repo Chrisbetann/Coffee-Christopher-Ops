@@ -1,6 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { z } = require('zod');
+const { sendWelcomeEmail } = require('../utils/email');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -22,6 +23,8 @@ router.post('/signup', async (req, res) => {
       return res.json({ customer: existing, created: false });
     }
     const customer = await prisma.customer.create({ data: { email, name, phone } });
+    // Fire welcome email — don't await so signup isn't blocked by email errors
+    sendWelcomeEmail(customer).catch((err) => console.error('Welcome email failed:', err.message));
     res.status(201).json({ customer, created: true });
   } catch (err) {
     console.error(err);

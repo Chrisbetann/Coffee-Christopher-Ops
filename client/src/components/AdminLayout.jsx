@@ -8,6 +8,7 @@ const NAV = [
   { to: '/admin/sales',       label: '💰 Sales' },
   { to: '/admin/inventory',   label: '📦 Inventory' },
   { to: '/admin/promotions',  label: '🏷️ Promotions' },
+  { to: '/admin/loyalty',     label: '⭐ Loyalty Members' },
 ];
 
 export default function AdminLayout({ children, title }) {
