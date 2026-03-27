@@ -52,3 +52,16 @@ export const getAuditLog       = (id)     => api.get(`/inventory/${id}/log`);
 export const createIngredient  = (data)   => api.post('/inventory', data);
 export const updateIngredient  = (id, d)  => api.put(`/inventory/${id}`, d);
 export const deleteIngredient  = (id)     => api.delete(`/inventory/${id}`);
+
+// ── Loyalty ───────────────────────────────────────────────────
+export const loyaltySignup   = (data)        => api.post('/loyalty/signup', data);
+export const loyaltyLookup   = (email)       => api.get('/loyalty/lookup', { params: { email } });
+export const applyPromo      = (data)        => api.post('/loyalty/apply-promo', data);
+
+// ── Admin Promotions ──────────────────────────────────────────
+export const getPromotions      = ()       => api.get('/admin/promotions');
+export const createPromotion    = (data)   => api.post('/admin/promotions', data);
+export const updatePromotion    = (id, d)  => api.put(`/admin/promotions/${id}`, d);
+export const togglePromotion    = (id)     => api.patch(`/admin/promotions/${id}/toggle`);
+export const deletePromotion    = (id)     => api.delete(`/admin/promotions/${id}`);
+export const getLoyaltyCustomers = ()      => api.get('/admin/promotions/customers');

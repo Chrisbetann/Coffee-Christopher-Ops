@@ -40,15 +40,76 @@ model Modifier {
 }
 
 model Order {
-  id         Int         @id @default(autoincrement())
-  order_num  String      @unique @db.VarChar(10)
-  status     OrderStatus @default(sent)
-  subtotal   Decimal     @db.Decimal(8, 2)
-  tax        Decimal     @db.Decimal(8, 2)
-  total      Decimal     @db.Decimal(8, 2)
-  created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
-  items      OrderItem[]
+  id                  Int         @id @default(autoincrement())
+  order_num           String      @unique @db.VarChar(10)
+  status              OrderStatus @default(sent)
+  subtotal            Decimal     @db.Decimal(8, 2)
+  tax                 Decimal     @db.Decimal(8, 2)
+  discount            Decimal     @default(0) @db.Decimal(8, 2)
+  total               Decimal     @db.Decimal(8, 2)
+  promo_code          String?     @db.VarChar(50)
+  customer_id         Int?
+  loyalty_points_earned Int       @default(0)
+  created_at          DateTime    @default(now())
+  updated_at          DateTime    @updatedAt
+  items               OrderItem[]
+  customer            Customer?   @relation(fields: [customer_id], references: [id])
+  loyalty_txns        LoyaltyTransaction[]
+}
+
+model Customer {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique @db.VarChar(150)
+  name       String   @db.VarChar(150)
+  phone      String?  @db.VarChar(30)
+  points     Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  orders     Order[]
+  loyalty_txns LoyaltyTransaction[]
+}
+
+model LoyaltyTransaction {
+  id          Int      @id @default(autoincrement())
+  customer_id Int
+  order_id    Int?
+  points      Int
+  type        LoyaltyTxnType
+  description String?  @db.VarChar(255)
+  created_at  DateTime @default(now())
+  customer    Customer @relation(fields: [customer_id], references: [id])
+  order       Order?   @relation(fields: [order_id], references: [id])
+}
+
+enum LoyaltyTxnType {
+  earned
+  redeemed
+}
+
+model Promotion {
+  id               Int           @id @default(autoincrement())
+  code             String        @unique @db.VarChar(50)
+  name             String        @db.VarChar(150)
+  description      String?
+  type             PromotionType
+  value            Decimal       @db.Decimal(8, 2)
+  applies_to       AppliesTo     @default(all)
+  item_ids         Json?
+  min_order_amount Decimal?      @db.Decimal(8, 2)
+  active           Boolean       @default(true)
+  expires_at       DateTime?
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+}
+
+enum PromotionType {
+  percent_off
+  dollar_off
+}
+
+enum AppliesTo {
+  all
+  specific_items
 }
 
 enum OrderStatus {

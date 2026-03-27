@@ -4,6 +4,11 @@ const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
+  const [promoCode, setPromoCode] = useState('');
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoInfo, setPromoInfo] = useState(null); // { code, name, type, value }
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [customerName, setCustomerName] = useState('');
 
   function addItem(item, quantity, selectedModifiers) {
     setItems((prev) => {
@@ -32,16 +37,38 @@ export function CartProvider({ children }) {
 
   function clearCart() {
     setItems([]);
+    setPromoCode('');
+    setPromoDiscount(0);
+    setPromoInfo(null);
+    setCustomerEmail('');
+    setCustomerName('');
+  }
+
+  function applyPromoResult(code, discount, info) {
+    setPromoCode(code);
+    setPromoDiscount(discount);
+    setPromoInfo(info);
+  }
+
+  function clearPromo() {
+    setPromoCode('');
+    setPromoDiscount(0);
+    setPromoInfo(null);
   }
 
   const subtotal = items.reduce((sum, i) => sum + Number(i.item.price) * i.quantity, 0);
   const TAX_RATE = 0.07;
-  const tax   = subtotal * TAX_RATE;
-  const total = subtotal + tax;
+  const tax = (subtotal - promoDiscount) > 0 ? (subtotal - promoDiscount) * TAX_RATE : subtotal * TAX_RATE;
+  const total = Math.max(subtotal - promoDiscount, 0) + tax;
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ items, addItem, updateQuantity, removeItem, clearCart, subtotal, tax, total, itemCount }}>
+    <CartContext.Provider value={{
+      items, addItem, updateQuantity, removeItem, clearCart,
+      subtotal, tax, total, itemCount,
+      promoCode, promoDiscount, promoInfo, applyPromoResult, clearPromo,
+      customerEmail, setCustomerEmail, customerName, setCustomerName,
+    }}>
       {children}
     </CartContext.Provider>
   );

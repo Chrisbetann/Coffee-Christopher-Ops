@@ -14,7 +14,8 @@ import Dashboard         from './pages/admin/Dashboard';
 import OrderQueue        from './pages/admin/OrderQueue';
 import MenuManagement    from './pages/admin/MenuManagement';
 import SalesDashboard    from './pages/admin/SalesDashboard';
-import InventoryTracking from './pages/admin/InventoryTracking';
+import InventoryTracking     from './pages/admin/InventoryTracking';
+import PromotionsManagement from './pages/admin/PromotionsManagement';
 
 export default function App() {
   return (
@@ -37,7 +38,8 @@ export default function App() {
             <Route path="/admin/orders"    element={<ProtectedRoute><OrderQueue /></ProtectedRoute>} />
             <Route path="/admin/menu"      element={<ProtectedRoute><MenuManagement /></ProtectedRoute>} />
             <Route path="/admin/sales"     element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
-            <Route path="/admin/inventory" element={<ProtectedRoute><InventoryTracking /></ProtectedRoute>} />
+            <Route path="/admin/inventory"  element={<ProtectedRoute><InventoryTracking /></ProtectedRoute>} />
+            <Route path="/admin/promotions" element={<ProtectedRoute><PromotionsManagement /></ProtectedRoute>} />
           </Routes>
         </BrowserRouter>
       </CartProvider>

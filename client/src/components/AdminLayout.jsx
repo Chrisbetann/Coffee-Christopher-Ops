@@ -2,11 +2,12 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const NAV = [
-  { to: '/admin/dashboard', label: '📊 Dashboard' },
-  { to: '/admin/orders',    label: '📋 Orders' },
-  { to: '/admin/menu',      label: '🍽️ Menu' },
-  { to: '/admin/sales',     label: '💰 Sales' },
-  { to: '/admin/inventory', label: '📦 Inventory' },
+  { to: '/admin/dashboard',   label: '📊 Dashboard' },
+  { to: '/admin/orders',      label: '📋 Orders' },
+  { to: '/admin/menu',        label: '🍽️ Menu' },
+  { to: '/admin/sales',       label: '💰 Sales' },
+  { to: '/admin/inventory',   label: '📦 Inventory' },
+  { to: '/admin/promotions',  label: '🏷️ Promotions' },
 ];
 
 export default function AdminLayout({ children, title }) {

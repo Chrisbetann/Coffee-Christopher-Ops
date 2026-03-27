@@ -5,6 +5,8 @@ export default function OrderConfirmation() {
   const { id } = useParams();
   const { state } = useLocation();
   const order = state?.order;
+  const pointsEarned = order?.loyalty_points_earned ?? 0;
+  const customerName = order?.customer_name ?? null;
 
   return (
     <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center px-4">
@@ -27,11 +29,25 @@ export default function OrderConfirmation() {
                   <span className="text-brand-brown">${(Number(i.unit_price) * i.quantity).toFixed(2)}</span>
                 </div>
               ))}
+              {Number(order.discount) > 0 && (
+                <div className="flex justify-between text-sm text-green-600 mt-1">
+                  <span>Discount{order.promo_code ? ` (${order.promo_code})` : ''}</span>
+                  <span>−${Number(order.discount).toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between font-bold text-brand-brown mt-2">
                 <span>Total</span>
                 <span>${Number(order.total).toFixed(2)}</span>
               </div>
             </div>
+
+            {pointsEarned > 0 && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-center">
+                <p className="text-amber-800 font-semibold text-sm">
+                  ⭐ +{pointsEarned} loyalty points earned{customerName ? `, ${customerName}` : ''}!
+                </p>
+              </div>
+            )}
           </>
         )}
 
