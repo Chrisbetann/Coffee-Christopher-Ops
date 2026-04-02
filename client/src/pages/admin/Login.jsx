@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
@@ -10,7 +10,9 @@ export default function Login() {
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
 
-  if (isAuth) { navigate('/admin/dashboard'); return null; }
+  useEffect(() => {
+    if (isAuth) navigate('/admin/dashboard');
+  }, [isAuth, navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();
