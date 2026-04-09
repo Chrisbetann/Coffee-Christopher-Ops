@@ -8,6 +8,7 @@ const adminRoutes = require('./routes/admin');
 const inventoryRoutes = require('./routes/inventory');
 const dashboardRoutes = require('./routes/dashboard');
 const reviewRoutes = require('./routes/reviews');
+const loyaltyRoutes = require('./routes/loyalty');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +22,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/loyalty', loyaltyRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 

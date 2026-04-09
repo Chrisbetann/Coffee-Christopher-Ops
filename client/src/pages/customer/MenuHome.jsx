@@ -56,14 +56,19 @@ export default function MenuHome() {
       {/* Header */}
       <header className="bg-brand-brown text-white px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow">
         <h1 className="text-xl font-bold tracking-wide">☕ Coffee Christopher</h1>
-        <Link to="/cart" className="relative">
-          <span className="text-2xl">🛒</span>
-          {itemCount > 0 && (
-            <span className="absolute -top-1 -right-2 bg-brand-tan text-brand-dark text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-              {itemCount}
-            </span>
-          )}
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link to="/loyalty/register" className="text-xs text-brand-tan font-medium bg-white/10 px-2 py-1 rounded-full">
+            🎟️ Rewards
+          </Link>
+          <Link to="/cart" className="relative">
+            <span className="text-2xl">🛒</span>
+            {itemCount > 0 && (
+              <span className="absolute -top-1 -right-2 bg-brand-tan text-brand-dark text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
+          </Link>
+        </div>
       </header>
 
       {/* Category pills */}

@@ -111,3 +111,15 @@ model Review {
   order      Order    @relation(fields: [order_id], references: [id])
   item       MenuItem @relation(fields: [item_id], references: [id])
 }
+
+model Customer {
+  id         Int      @id @default(autoincrement())
+  first_name String   @db.VarChar(100)
+  last_name  String   @db.VarChar(100)
+  email      String   @unique @db.VarChar(150)
+  phone      String   @unique @db.VarChar(20)
+  stamps     Int      @default(0)
+  qr_code    String   @unique @db.VarChar(20)
+  birthday   String?  @db.VarChar(10)
+  created_at DateTime @default(now())
+}

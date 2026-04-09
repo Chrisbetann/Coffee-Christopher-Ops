@@ -58,3 +58,10 @@ export const submitReview      = (data)      => api.post('/reviews', data);
 export const getItemReviews    = (itemId)    => api.get(`/reviews/${itemId}`);
 export const getAdminReviews   = ()          => api.get('/reviews/admin/all');
 export const deleteReview      = (id)        => api.delete(`/reviews/admin/${id}`);
+
+// ── Loyalty ──────────────────────────────────────────────────
+export const registerLoyalty    = (data)    => api.post('/loyalty/register', data);
+export const getLoyaltyCard     = (qrCode)  => api.get(`/loyalty/${qrCode}`);
+export const getLoyaltyCustomers = ()       => api.get('/loyalty/admin/customers');
+export const addStamp           = (qrCode)  => api.post('/loyalty/admin/stamp', { qr_code: qrCode });
+export const redeemFree         = (qrCode)  => api.post('/loyalty/admin/redeem', { qr_code: qrCode });
