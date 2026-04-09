@@ -8,6 +8,7 @@ import ItemDetail        from './pages/customer/ItemDetail';
 import Cart              from './pages/customer/Cart';
 import OrderConfirmation from './pages/customer/OrderConfirmation';
 import OrderStatus       from './pages/customer/OrderStatus';
+import LoyaltyHome     from './pages/customer/LoyaltyHome';
 import LoyaltyRegister  from './pages/customer/LoyaltyRegister';
 import LoyaltyCard      from './pages/customer/LoyaltyCard';
 
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/cart"        element={<Cart />} />
             <Route path="/order/:id/confirmed" element={<OrderConfirmation />} />
             <Route path="/order/:id"   element={<OrderStatus />} />
+            <Route path="/loyalty"           element={<LoyaltyHome />} />
             <Route path="/loyalty/register" element={<LoyaltyRegister />} />
             <Route path="/loyalty/:qrCode"  element={<LoyaltyCard />} />
 

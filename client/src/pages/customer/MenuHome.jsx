@@ -57,7 +57,7 @@ export default function MenuHome() {
       <header className="bg-brand-brown text-white px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow">
         <h1 className="text-xl font-bold tracking-wide">☕ Coffee Christopher</h1>
         <div className="flex items-center gap-3">
-          <Link to="/loyalty/register" className="text-xs text-brand-tan font-medium bg-white/10 px-2 py-1 rounded-full">
+          <Link to="/loyalty" className="text-sm text-white font-semibold bg-white/20 border border-white/30 px-3 py-1.5 rounded-full flex items-center gap-1">
             🎟️ Rewards
           </Link>
           <Link to="/cart" className="relative">
