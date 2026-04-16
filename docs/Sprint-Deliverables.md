@@ -1,5 +1,5 @@
 # Coffee Christopher Ops Suite
-## Sprint Deliverables: Week 9 — Week 13
+## Sprint Deliverables: Week 9 — Week 15
 **Author:** Christopher Betancourt
 **Course:** CSIS 4903 - Capstone Project for Computer Science
 **Institution:** Nova Southeastern University
@@ -239,6 +239,48 @@ A customer review system that allows customers to rate and comment on items they
 
 ---
 
+## Week 15 — Loyalty Program: Virtual Stamp Card + Member Management
+**Date:** 04/09/2026
+**Status:** ✅ Complete — **Release 4 (Loyalty & Customer Retention)**
+
+### What Was Built
+A full virtual loyalty program: customers sign up with first/last name, email, phone, and optional birthday, receive a unique 8-character QR code, and earn a stamp per visit. Every 6th drink is free. The customer sees an animated stamp card on their phone; admins manage members from a dedicated portal that exports to CSV for marketing campaigns.
+
+### Features Delivered
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Customer Registration | ✅ | First name, last name, email, phone required; birthday optional |
+| Unique QR Code | ✅ | 8-character code generated and verified unique at sign-up |
+| Virtual Stamp Card | ✅ | 6-slot grid; 6th slot shows gold star + "FREE!" |
+| Stamp Animation | ✅ | Keyframe animation (`stamp-pop`) plays on new stamp |
+| Admin Stamp Button | ✅ | One-click stamp from admin portal |
+| Admin Redeem | ✅ | Decrements stamps by 6 when customer redeems free drink |
+| Member Search | ✅ | Search members by name, email, or phone |
+| CSV Export | ✅ | Downloads full member list (pure browser Blob API) |
+| Standalone Landing Page | ✅ | `/loyalty` accessible without going through ordering menu |
+| Live Sync | ✅ | Customer card polls every 5 seconds for stamp updates |
+
+### Technical Implementation
+- **Database:** Added `Customer` model (first_name, last_name, email, phone, stamps, qr_code, birthday, created_at) with unique indexes on email, phone, and qr_code
+- **Frontend:** `LoyaltyHome.jsx` — landing page with preview stamp card and existing-member code lookup
+- **Frontend:** `LoyaltyRegister.jsx` — sign-up form with stamp card preview
+- **Frontend:** `LoyaltyCard.jsx` — animated stamp card using `qrcode.react` for QR generation
+- **Frontend:** `LoyaltyManagement.jsx` — admin portal with summary cards, search, +stamp, redeem, and CSV export
+- **Backend:** `POST /api/loyalty/register` — generates unique QR code
+- **Backend:** `GET /api/loyalty/:qrCode` — public card lookup
+- **Backend:** `POST /api/loyalty/admin/stamp` — add stamp (admin)
+- **Backend:** `POST /api/loyalty/admin/redeem` — redeem free drink (admin)
+- **Backend:** `GET /api/loyalty/admin/customers` — list all members
+- **Backend:** `GET /api/loyalty/lookup/phone/:phone` — admin phone lookup
+
+### CSV Export
+The admin portal generates a CSV of all loyalty members entirely in the browser using the Blob API — no server round-trip, no storage of generated files. Columns: First Name, Last Name, Email, Phone, Stamps, Birthday. Useful for importing into Mailchimp, Klaviyo, or any SMS marketing platform for birthday promotions and targeted campaigns.
+
+### Stamps Threshold
+- **Every 6th drink is free.** Easy to change: update the `STAMPS_FOR_FREE` constant in `server/routes/loyalty.js`.
+
+---
+
 ## Overall Technical Summary
 
 ### Architecture
@@ -282,14 +324,19 @@ Customer Browser (React)          Admin Browser (React)
 | audit_log | Count change history |
 | reviews | Customer ratings and comments |
 | admins | Admin accounts (hashed passwords) |
+| customers | Loyalty program members (QR codes + stamps) |
 
-### API Endpoints (25 total)
+### API Endpoints (35 total)
 **Public (no auth):**
 - `GET /api/menu/categories`
 - `GET /api/menu/items`
 - `GET /api/menu/items/:id`
 - `POST /api/orders`
 - `GET /api/orders/:id`
+
+**Loyalty Public:**
+- `POST /api/loyalty/register`
+- `GET /api/loyalty/:qrCode`
 
 **Admin (JWT required):**
 - `POST /api/admin/login`
@@ -309,6 +356,10 @@ Customer Browser (React)          Admin Browser (React)
 - `GET /api/reviews/:itemId`
 - `GET /api/reviews/admin/all`
 - `DELETE /api/reviews/admin/:id`
+- `GET /api/loyalty/admin/customers`
+- `GET /api/loyalty/lookup/phone/:phone`
+- `POST /api/loyalty/admin/stamp`
+- `POST /api/loyalty/admin/redeem`
 
 ---
 
@@ -326,5 +377,5 @@ Customer Browser (React)          Admin Browser (React)
 ## Repository
 **GitHub:** https://github.com/Chrisbetann/Coffee-Christopher-Ops
 **Branch:** main
-**Total files:** 41 source files
-**Total lines of code:** ~3,100
+**Total files:** 50+ source files
+**Total lines of code:** ~4,200
