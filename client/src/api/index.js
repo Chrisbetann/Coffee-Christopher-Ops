@@ -60,8 +60,20 @@ export const getAdminReviews   = ()          => api.get('/reviews/admin/all');
 export const deleteReview      = (id)        => api.delete(`/reviews/admin/${id}`);
 
 // ── Loyalty ──────────────────────────────────────────────────
-export const registerLoyalty    = (data)    => api.post('/loyalty/register', data);
-export const getLoyaltyCard     = (qrCode)  => api.get(`/loyalty/${qrCode}`);
-export const getLoyaltyCustomers = ()       => api.get('/loyalty/admin/customers');
-export const addStamp           = (qrCode)  => api.post('/loyalty/admin/stamp', { qr_code: qrCode });
-export const redeemFree         = (qrCode)  => api.post('/loyalty/admin/redeem', { qr_code: qrCode });
+export const registerLoyalty     = (data)    => api.post('/loyalty/register', data);
+export const getLoyaltyCard      = (qrCode)  => api.get(`/loyalty/${qrCode}`);
+export const lookupByPhone       = (phone)   => api.get(`/loyalty/by-phone/${encodeURIComponent(phone)}`);
+export const getLoyaltyCustomers = ()        => api.get('/loyalty/admin/customers');
+export const addStamp            = (qrCode)  => api.post('/loyalty/admin/stamp', { qr_code: qrCode });
+export const redeemFree          = (qrCode)  => api.post('/loyalty/admin/redeem', { qr_code: qrCode });
+export const adminAddCustomer    = (data)    => api.post('/loyalty/admin/customers', data);
+export const adminDeleteCustomer = (id)      => api.delete(`/loyalty/admin/customers/${id}`);
+export const buildWeeklyReminder = ()        => api.post('/loyalty/admin/reminders/weekly');
+
+// ── Promos ───────────────────────────────────────────────────
+export const getPromos         = ()                 => api.get('/promos');
+export const createPromo       = (data)             => api.post('/promos', data);
+export const updatePromo       = (id, data)         => api.patch(`/promos/${id}`, data);
+export const deletePromo       = (id)               => api.delete(`/promos/${id}`);
+export const getPromoRecipients = (id)              => api.get(`/promos/${id}/recipients`);
+export const markPromoSent     = (id, custId, data) => api.patch(`/promos/${id}/recipients/${custId}`, data);

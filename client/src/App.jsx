@@ -20,6 +20,7 @@ import SalesDashboard    from './pages/admin/SalesDashboard';
 import InventoryTracking from './pages/admin/InventoryTracking';
 import ReviewModeration  from './pages/admin/ReviewModeration';
 import LoyaltyManagement from './pages/admin/LoyaltyManagement';
+import PromoManagement   from './pages/admin/PromoManagement';
 
 export default function App() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
             <Route path="/admin/inventory" element={<ProtectedRoute><InventoryTracking /></ProtectedRoute>} />
             <Route path="/admin/reviews"   element={<ProtectedRoute><ReviewModeration /></ProtectedRoute>} />
             <Route path="/admin/loyalty"   element={<ProtectedRoute><LoyaltyManagement /></ProtectedRoute>} />
+            <Route path="/admin/promos"    element={<ProtectedRoute><PromoManagement /></ProtectedRoute>} />
           </Routes>
         </BrowserRouter>
       </CartProvider>

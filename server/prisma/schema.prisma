@@ -113,13 +113,39 @@ model Review {
 }
 
 model Customer {
-  id         Int      @id @default(autoincrement())
-  first_name String   @db.VarChar(100)
-  last_name  String   @db.VarChar(100)
-  email      String   @unique @db.VarChar(150)
-  phone      String   @unique @db.VarChar(20)
-  stamps     Int      @default(0)
-  qr_code    String   @unique @db.VarChar(20)
-  birthday   String?  @db.VarChar(10)
-  created_at DateTime @default(now())
+  id          Int         @id @default(autoincrement())
+  first_name  String      @db.VarChar(100)
+  last_name   String      @db.VarChar(100)
+  email       String      @unique @db.VarChar(150)
+  phone       String      @unique @db.VarChar(20)
+  stamps      Int         @default(0)
+  qr_code     String      @unique @db.VarChar(20)
+  birthday    String?     @db.VarChar(10)
+  created_at  DateTime    @default(now())
+  promo_sends PromoSend[]
+}
+
+model Promo {
+  id             Int         @id @default(autoincrement())
+  title          String      @db.VarChar(100)
+  description    String?
+  discount_type  String      @db.VarChar(20)
+  discount_value Decimal     @db.Decimal(8, 2)
+  item_name      String?     @db.VarChar(100)
+  active         Boolean     @default(true)
+  created_at     DateTime    @default(now())
+  sends          PromoSend[]
+}
+
+model PromoSend {
+  id          Int       @id @default(autoincrement())
+  promo_id    Int
+  customer_id Int
+  email_sent  Boolean   @default(false)
+  sms_sent    Boolean   @default(false)
+  sent_at     DateTime?
+  promo       Promo     @relation(fields: [promo_id], references: [id], onDelete: Cascade)
+  customer    Customer  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+
+  @@unique([promo_id, customer_id])
 }

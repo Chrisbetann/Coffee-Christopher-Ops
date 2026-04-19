@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerLoyalty } from '../../api';
 
+function formatPhone(value) {
+  const digits = value.replace(/\D/g, '').slice(0, 10);
+  if (digits.length < 4) return digits;
+  if (digits.length < 7) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
 export default function LoyaltyRegister() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ first_name: '', last_name: '', email: '', phone: '', birthday: '' });
@@ -14,6 +21,10 @@ export default function LoyaltyRegister() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (form.phone.replace(/\D/g, '').length < 10) {
+      setError('Please enter your full 10-digit phone number');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -92,12 +103,15 @@ export default function LoyaltyRegister() {
             <label className="block text-sm font-medium text-brand-dark mb-1">Phone Number</label>
             <input
               type="tel"
+              inputMode="tel"
+              autoComplete="tel"
               required
               value={form.phone}
-              onChange={(e) => set('phone', e.target.value)}
-              className="w-full border border-brand-tan rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-brown"
+              onChange={(e) => set('phone', formatPhone(e.target.value))}
+              className="w-full border border-brand-tan rounded-lg px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-brown"
               placeholder="(555) 123-4567"
             />
+            <p className="text-xs text-gray-400 mt-1">You'll use this to sign in to your card.</p>
           </div>
 
           <div>

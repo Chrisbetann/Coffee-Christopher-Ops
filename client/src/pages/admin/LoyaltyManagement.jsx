@@ -1,12 +1,25 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
-import { getLoyaltyCustomers, addStamp, redeemFree } from '../../api';
+import {
+  getLoyaltyCustomers,
+  addStamp,
+  redeemFree,
+  adminAddCustomer,
+  adminDeleteCustomer,
+  buildWeeklyReminder,
+} from '../../api';
+
+const EMPTY_FORM = { first_name: '', last_name: '', email: '', phone: '', birthday: '' };
 
 export default function LoyaltyManagement() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading]     = useState(true);
   const [search, setSearch]       = useState('');
   const [actionMsg, setActionMsg] = useState({});
+  const [showAdd, setShowAdd]     = useState(false);
+  const [addForm, setAddForm]     = useState(EMPTY_FORM);
+  const [addError, setAddError]   = useState('');
+  const [adding, setAdding]       = useState(false);
 
   async function load() {
     try {
@@ -24,24 +37,68 @@ export default function LoyaltyManagement() {
     setTimeout(() => setActionMsg((prev) => { const n = { ...prev }; delete n[id]; return n; }), 3000);
   }
 
-  async function handleStamp(customer) {
+  async function handleStamp(c) {
     try {
-      const { data } = await addStamp(customer.qr_code);
-      setCustomers((prev) => prev.map((c) => c.id === customer.id ? data : c));
-      flash(customer.id, `+1 stamp! Now ${data.stamps} total`);
+      const { data } = await addStamp(c.qr_code);
+      setCustomers((prev) => prev.map((x) => x.id === c.id ? data : x));
+      flash(c.id, `+1 stamp! Now ${data.stamps} total`);
     } catch {
-      flash(customer.id, 'Failed to add stamp', true);
+      flash(c.id, 'Failed to add stamp', true);
     }
   }
 
-  async function handleRedeem(customer) {
-    if (!confirm(`Redeem 1 free drink for ${customer.first_name}?`)) return;
+  async function handleRedeem(c) {
+    if (!confirm(`Redeem 1 free drink for ${c.first_name}?`)) return;
     try {
-      const { data } = await redeemFree(customer.qr_code);
-      setCustomers((prev) => prev.map((c) => c.id === customer.id ? data : c));
-      flash(customer.id, 'Free drink redeemed!');
+      const { data } = await redeemFree(c.qr_code);
+      setCustomers((prev) => prev.map((x) => x.id === c.id ? data : x));
+      flash(c.id, 'Free drink redeemed!');
     } catch (err) {
-      flash(customer.id, err.response?.data?.error || 'No free drinks available', true);
+      flash(c.id, err.response?.data?.error || 'No free drinks available', true);
+    }
+  }
+
+  async function handleDelete(c) {
+    if (!confirm(`Delete ${c.first_name} ${c.last_name}? This cannot be undone.`)) return;
+    try {
+      await adminDeleteCustomer(c.id);
+      setCustomers((prev) => prev.filter((x) => x.id !== c.id));
+    } catch {
+      flash(c.id, 'Failed to delete', true);
+    }
+  }
+
+  async function handleAdd(e) {
+    e.preventDefault();
+    setAdding(true);
+    setAddError('');
+    try {
+      const { data } = await adminAddCustomer(addForm);
+      setCustomers((prev) => [data, ...prev]);
+      setAddForm(EMPTY_FORM);
+      setShowAdd(false);
+    } catch (err) {
+      setAddError(err.response?.data?.error || 'Failed to add customer');
+    } finally {
+      setAdding(false);
+    }
+  }
+
+  async function handleWeeklyReminder() {
+    try {
+      const { data } = await buildWeeklyReminder();
+      if (data.ready === 0) {
+        alert('No members with stamps yet — no reminder needed.');
+        return;
+      }
+      const emails = data.customers.map((c) => c.email).filter(Boolean);
+      const subject = encodeURIComponent('☕ Your Coffee Christopher stamps are waiting!');
+      const body = encodeURIComponent(
+        "Hey there!\n\nJust a friendly reminder that you have stamps waiting on your Coffee Christopher loyalty card. Stop by this week and get one step closer to a free drink!\n\n— Coffee Christopher"
+      );
+      window.location.href = `mailto:?bcc=${emails.join(',')}&subject=${subject}&body=${body}`;
+    } catch {
+      alert('Failed to build reminder batch');
     }
   }
 
@@ -61,7 +118,7 @@ export default function LoyaltyManagement() {
 
   return (
     <AdminLayout title="Loyalty Program">
-      {/* Summary cards */}
+      {/* Summary */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-xl p-4 shadow-sm text-center">
           <p className="text-3xl font-bold text-brand-brown">{totalMembers}</p>
@@ -77,29 +134,35 @@ export default function LoyaltyManagement() {
         </div>
       </div>
 
-      {/* Promotions note */}
-      <div className="bg-brand-tan bg-opacity-30 border border-brand-tan rounded-xl p-4 mb-6">
-        <p className="font-semibold text-brand-dark text-sm mb-1">📣 Send a Promotion</p>
-        <p className="text-xs text-gray-600">
-          Export customer contacts below to reach your members via email or SMS.
-          {totalMembers > 0 && ` You have ${totalMembers} members with ${customers.filter(c => c.email).length} emails and ${customers.filter(c => c.phone).length} phone numbers on file.`}
-        </p>
-        {totalMembers > 0 && (
-          <button
-            onClick={() => {
-              const rows = ['First Name,Last Name,Email,Phone,Stamps,Birthday'];
-              customers.forEach((c) => rows.push(`${c.first_name},${c.last_name},${c.email},${c.phone},${c.stamps},${c.birthday || ''}`));
-              const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url; a.download = 'loyalty-members.csv'; a.click();
-              URL.revokeObjectURL(url);
-            }}
-            className="mt-2 bg-brand-brown text-white px-4 py-1.5 rounded-lg text-xs font-medium"
-          >
-            Export CSV
-          </button>
-        )}
+      {/* Action toolbar */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button
+          onClick={() => setShowAdd(true)}
+          className="bg-brand-brown text-white px-4 py-2 rounded-lg text-sm font-medium"
+        >
+          + Add Customer
+        </button>
+        <button
+          onClick={handleWeeklyReminder}
+          className="bg-brand-tan text-brand-dark px-4 py-2 rounded-lg text-sm font-medium"
+        >
+          📧 Send Weekly Reminder
+        </button>
+        <button
+          onClick={() => {
+            const rows = ['First Name,Last Name,Email,Phone,Stamps,Birthday'];
+            customers.forEach((c) => rows.push(`${c.first_name},${c.last_name},${c.email},${c.phone},${c.stamps},${c.birthday || ''}`));
+            const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'loyalty-members.csv'; a.click();
+            URL.revokeObjectURL(url);
+          }}
+          disabled={totalMembers === 0}
+          className="bg-white border border-brand-tan text-brand-brown px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+        >
+          ⬇️ Export CSV
+        </button>
       </div>
 
       {/* Search */}
@@ -146,8 +209,9 @@ export default function LoyaltyManagement() {
                       {Array.from({ length: 6 }).map((_, i) => (
                         <div
                           key={i}
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs
-                            ${i < stampsOnCard ? 'bg-brand-brown text-white' : 'bg-gray-100 text-gray-300'}`}
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                            i < stampsOnCard ? 'bg-brand-brown text-white' : 'bg-gray-100 text-gray-300'
+                          }`}
                         >
                           {i < stampsOnCard ? '☕' : '○'}
                         </div>
@@ -177,11 +241,56 @@ export default function LoyaltyManagement() {
                         Redeem 🎉
                       </button>
                     )}
+                    <button
+                      onClick={() => handleDelete(c)}
+                      className="bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Add-customer modal */}
+      {showAdd && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+            <h2 className="text-lg font-bold text-brand-brown mb-4">Force Add Customer</h2>
+            <form onSubmit={handleAdd} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <input required placeholder="First name" value={addForm.first_name}
+                  onChange={(e) => setAddForm({ ...addForm, first_name: e.target.value })}
+                  className="border border-brand-tan rounded-lg px-3 py-2" />
+                <input required placeholder="Last name" value={addForm.last_name}
+                  onChange={(e) => setAddForm({ ...addForm, last_name: e.target.value })}
+                  className="border border-brand-tan rounded-lg px-3 py-2" />
+              </div>
+              <input required type="email" placeholder="Email" value={addForm.email}
+                onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                className="w-full border border-brand-tan rounded-lg px-3 py-2" />
+              <input required type="tel" inputMode="tel" placeholder="Phone" value={addForm.phone}
+                onChange={(e) => setAddForm({ ...addForm, phone: e.target.value })}
+                className="w-full border border-brand-tan rounded-lg px-3 py-2" />
+              <input type="date" placeholder="Birthday (optional)" value={addForm.birthday}
+                onChange={(e) => setAddForm({ ...addForm, birthday: e.target.value })}
+                className="w-full border border-brand-tan rounded-lg px-3 py-2" />
+              {addError && <p className="text-red-500 text-sm">{addError}</p>}
+              <div className="flex gap-2 pt-2">
+                <button type="button" onClick={() => { setShowAdd(false); setAddError(''); setAddForm(EMPTY_FORM); }}
+                  className="flex-1 border border-brand-tan text-brand-brown py-2.5 rounded-lg font-medium">
+                  Cancel
+                </button>
+                <button type="submit" disabled={adding}
+                  className="flex-1 bg-brand-brown text-white py-2.5 rounded-lg font-bold disabled:opacity-60">
+                  {adding ? 'Adding…' : 'Add Customer'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </AdminLayout>
