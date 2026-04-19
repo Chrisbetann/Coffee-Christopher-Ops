@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { QRCodeSVG as QRCode } from 'qrcode.react';
 import { getLoyaltyCard } from '../../api';
+import InstallPrompt from '../../components/InstallPrompt';
 
 const STAMPS_FOR_FREE = 6;
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
@@ -23,6 +24,7 @@ export default function LoyaltyCard() {
   const [error, setError] = useState('');
   const [animStamp, setAnimStamp] = useState(null);
   const [walletNote, setWalletNote] = useState('');
+  const [shareNote, setShareNote] = useState('');
 
   useEffect(() => {
     let prevStamps = null;
@@ -46,6 +48,31 @@ export default function LoyaltyCard() {
     const interval = setInterval(load, 5000);
     return () => clearInterval(interval);
   }, [qrCode]);
+
+  async function handleShare() {
+    setShareNote('');
+    const url = `${window.location.origin}/loyalty/${qrCode}`;
+    const shareData = {
+      title: 'Coffee Christopher Rewards',
+      text: 'My Coffee Christopher stamp card',
+      url,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // user cancelled — no-op
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareNote('Link copied to clipboard!');
+      setTimeout(() => setShareNote(''), 2500);
+    } catch {
+      setShareNote('Copy failed — long-press the address bar to share.');
+    }
+  }
 
   async function handleAddToWallet(platform) {
     setWalletNote('');
@@ -221,10 +248,23 @@ export default function LoyaltyCard() {
           {walletNote && <p className="text-xs text-red-500 text-center mt-2">{walletNote}</p>}
         </div>
 
+        <div className="bg-white rounded-2xl p-5 shadow-sm mb-4">
+          <p className="font-semibold text-brand-dark mb-1 text-center">Share Your Card</p>
+          <p className="text-xs text-gray-400 text-center mb-3">Send your loyalty card link to open it on any device.</p>
+          <button
+            onClick={handleShare}
+            className="w-full bg-brand-tan text-brand-dark py-3 rounded-xl font-semibold text-sm active:scale-95 transition"
+          >
+            Share Loyalty Card
+          </button>
+          {shareNote && <p className="text-xs text-brand-brown text-center mt-2">{shareNote}</p>}
+        </div>
+
         <button onClick={() => navigate('/menu')} className="w-full bg-brand-brown text-white py-3 rounded-xl font-bold">
           ← Back to Menu
         </button>
       </div>
+      <InstallPrompt />
     </div>
   );
 }
