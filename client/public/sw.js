@@ -1,4 +1,4 @@
-const CACHE = 'cc-rewards-v1';
+const CACHE = 'cc-rewards-v2';
 const SHELL = ['/', '/loyalty', '/menu', '/manifest.webmanifest', '/icon-192.svg', '/icon-512.svg', '/coffee.svg'];
 
 self.addEventListener('install', (event) => {
@@ -23,8 +23,11 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
-  // Never cache API calls — always hit network, fall through to cached
-  // card data only if network fails so the stamp card still opens offline.
+  // Don't intercept cross-origin or Vite dev/HMR requests.
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/@') || url.pathname.startsWith('/src/') || url.pathname.includes('/node_modules/')) return;
+
+  // API calls: network-first, cached loyalty card fallback only.
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(request)
@@ -35,12 +38,12 @@ self.addEventListener('fetch', (event) => {
           }
           return resp;
         })
-        .catch(() => caches.match(request))
+        .catch(async () => (await caches.match(request)) || Response.error())
     );
     return;
   }
 
-  // Navigation requests: network first, fall back to cache, then shell
+  // Navigation: network-first, fall back to cache, then shell.
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -49,12 +52,16 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE).then((c) => c.put(request, clone)).catch(() => {});
           return resp;
         })
-        .catch(() => caches.match(request).then((r) => r || caches.match('/')))
+        .catch(async () =>
+          (await caches.match(request)) ||
+          (await caches.match('/')) ||
+          Response.error()
+        )
     );
     return;
   }
 
-  // Static assets: stale-while-revalidate
+  // Static assets: stale-while-revalidate.
   event.respondWith(
     caches.match(request).then((cached) => {
       const network = fetch(request)
@@ -63,7 +70,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE).then((c) => c.put(request, clone)).catch(() => {});
           return resp;
         })
-        .catch(() => cached);
+        .catch(() => cached || Response.error());
       return cached || network;
     })
   );
