@@ -87,18 +87,16 @@ export default function LoyaltyManagement() {
   async function handleWeeklyReminder() {
     try {
       const { data } = await buildWeeklyReminder();
-      if (data.ready === 0) {
+      if (data.sent === 0 && data.total === 0) {
         alert('No members with stamps yet — no reminder needed.');
         return;
       }
-      const emails = data.customers.map((c) => c.email).filter(Boolean);
-      const subject = encodeURIComponent('☕ Your Coffee Christopher stamps are waiting!');
-      const body = encodeURIComponent(
-        "Hey there!\n\nJust a friendly reminder that you have stamps waiting on your Coffee Christopher loyalty card. Stop by this week and get one step closer to a free drink!\n\n— Coffee Christopher"
-      );
-      window.location.href = `mailto:?bcc=${emails.join(',')}&subject=${subject}&body=${body}`;
+      const msg = data.failed > 0
+        ? `Sent ${data.sent} of ${data.total} reminders. ${data.failed} failed — check server SMTP settings.`
+        : `Sent ${data.sent} reminder email${data.sent === 1 ? '' : 's'} successfully!`;
+      alert(msg);
     } catch {
-      alert('Failed to build reminder batch');
+      alert('Failed to send reminders');
     }
   }
 

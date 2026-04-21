@@ -6,6 +6,7 @@ import {
   deletePromo,
   getPromoRecipients,
   markPromoSent,
+  sendPromoEmail,
 } from '../../api';
 
 const EMPTY = { title: '', description: '', discount_type: 'percent', discount_value: '', item_name: '' };
@@ -26,6 +27,7 @@ export default function PromoManagement() {
   const [showForm, setShowForm]     = useState(false);
   const [formError, setFormError]   = useState('');
   const [search, setSearch]         = useState('');
+  const [sendingEmail, setSendingEmail] = useState(null);
 
   async function load() {
     try {
@@ -76,6 +78,22 @@ export default function PromoManagement() {
       await load();
     } catch {
       alert('Failed to delete');
+    }
+  }
+
+  async function handleSendEmail(recipient) {
+    setSendingEmail(recipient.customer.id);
+    try {
+      const { data } = await sendPromoEmail(selected.id, recipient.customer.id);
+      setRecipients((prev) => prev.map((r) =>
+        r.customer.id === recipient.customer.id
+          ? { ...r, email_sent: data.email_sent, sms_sent: data.sms_sent, sent_at: data.sent_at }
+          : r
+      ));
+    } catch {
+      alert('Failed to send email — check server SMTP settings');
+    } finally {
+      setSendingEmail(null);
     }
   }
 
@@ -211,12 +229,13 @@ export default function PromoManagement() {
                       </div>
                       <div className="flex flex-col gap-1.5 shrink-0">
                         <div className="flex items-center gap-2">
-                          <a
-                            href={mailtoForRecipient(r)}
-                            className="bg-brand-brown text-white px-2.5 py-1 rounded text-xs font-medium"
+                          <button
+                            onClick={() => handleSendEmail(r)}
+                            disabled={sendingEmail === r.customer.id}
+                            className="bg-brand-brown text-white px-2.5 py-1 rounded text-xs font-medium disabled:opacity-50"
                           >
-                            📧 Email
-                          </a>
+                            {sendingEmail === r.customer.id ? '…' : '📧 Email'}
+                          </button>
                           <label className="flex items-center gap-1 text-xs text-gray-500">
                             <input
                               type="checkbox"

@@ -77,3 +77,4 @@ export const updatePromo       = (id, data)         => api.patch(`/promos/${id}`
 export const deletePromo       = (id)               => api.delete(`/promos/${id}`);
 export const getPromoRecipients = (id)              => api.get(`/promos/${id}/recipients`);
 export const markPromoSent     = (id, custId, data) => api.patch(`/promos/${id}/recipients/${custId}`, data);
+export const sendPromoEmail    = (id, custId)       => api.post(`/promos/${id}/recipients/${custId}/email`);

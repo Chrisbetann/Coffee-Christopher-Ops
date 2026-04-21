@@ -1,6 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { requireAuth } = require('../middleware/auth');
+const mailer = require('../mailer');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -234,10 +235,7 @@ router.get('/admin/customers', requireAuth, async (req, res) => {
   }
 });
 
-// POST /api/loyalty/admin/reminders/weekly — build weekly reminder batch
-// Returns all members with ≥1 stamp. The admin UI uses this to open one
-// big mailto: email. If SENDGRID_API_KEY is ever configured, swap in a
-// SendGrid send here to fully automate.
+// POST /api/loyalty/admin/reminders/weekly — send weekly reminder emails via SMTP
 router.post('/admin/reminders/weekly', requireAuth, async (req, res) => {
   try {
     const customers = await prisma.customer.findMany({
@@ -245,18 +243,28 @@ router.post('/admin/reminders/weekly', requireAuth, async (req, res) => {
       orderBy: { created_at: 'desc' },
     });
 
-    const hasSendGrid = !!process.env.SENDGRID_API_KEY;
+    if (customers.length === 0) {
+      return res.json({ sent: 0 });
+    }
 
-    res.json({
-      ready: customers.length,
-      delivery: hasSendGrid ? 'sendgrid' : 'mailto',
-      customers,
-      note: hasSendGrid
-        ? 'SENDGRID_API_KEY is configured — wire the SendGrid send call to fully automate delivery.'
-        : 'No SENDGRID_API_KEY set. Admin UI falls back to mailto: link batching.',
-    });
+    const results = await Promise.allSettled(
+      customers.map((c) =>
+        mailer.sendMail({
+          from: `"Coffee Christopher" <${process.env.SMTP_USER}>`,
+          to: c.email,
+          subject: '☕ Your Coffee Christopher stamps are waiting!',
+          text: `Hey ${c.first_name},\n\nJust a friendly reminder that you have ${c.stamps} stamp${c.stamps === 1 ? '' : 's'} on your Coffee Christopher loyalty card. Stop by this week and get one step closer to a free drink!\n\n— Coffee Christopher`,
+        })
+      )
+    );
+
+    const sent = results.filter((r) => r.status === 'fulfilled').length;
+    const failed = results.length - sent;
+
+    res.json({ sent, failed, total: customers.length });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to build reminder batch' });
+    console.error('Weekly reminder failed:', err);
+    res.status(500).json({ error: 'Failed to send reminders' });
   }
 });
 

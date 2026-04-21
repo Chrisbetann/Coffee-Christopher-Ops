@@ -2,6 +2,7 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { z } = require('zod');
 const { requireAuth } = require('../middleware/auth');
+const mailer = require('../mailer');
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -124,6 +125,52 @@ router.patch('/:id/recipients/:customerId', async (req, res) => {
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update send status' });
+  }
+});
+
+// POST /api/promos/:id/recipients/:customerId/email — send promo email via SMTP
+router.post('/:id/recipients/:customerId/email', async (req, res) => {
+  const promoId = parseInt(req.params.id);
+  const customerId = parseInt(req.params.customerId);
+
+  try {
+    const [promo, customer] = await Promise.all([
+      prisma.promo.findUnique({ where: { id: promoId } }),
+      prisma.customer.findUnique({ where: { id: customerId } }),
+    ]);
+
+    if (!promo || !customer) return res.status(404).json({ error: 'Not found' });
+
+    const v = Number(promo.discount_value);
+    const offer =
+      promo.discount_type === 'percent' ? `${v}% off`
+      : promo.discount_type === 'amount' ? `$${v.toFixed(2)} off`
+      : `$${v.toFixed(2)} off ${promo.item_name || 'item'}`;
+
+    await mailer.sendMail({
+      from: `"Coffee Christopher" <${process.env.SMTP_USER}>`,
+      to: customer.email,
+      subject: `☕ ${promo.title} — just for you, ${customer.first_name}!`,
+      text: `Hey ${customer.first_name},\n\n${promo.description || `Here's a special offer: ${offer}`}\n\nShow this email (or your loyalty card) at the counter to redeem.\n\n— Coffee Christopher`,
+    });
+
+    // Auto-mark email as sent
+    const existing = await prisma.promoSend.findUnique({
+      where: { promo_id_customer_id: { promo_id: promoId, customer_id: customerId } },
+    });
+    const updated = existing
+      ? await prisma.promoSend.update({
+          where: { promo_id_customer_id: { promo_id: promoId, customer_id: customerId } },
+          data: { email_sent: true, sent_at: new Date() },
+        })
+      : await prisma.promoSend.create({
+          data: { promo_id: promoId, customer_id: customerId, email_sent: true, sms_sent: false, sent_at: new Date() },
+        });
+
+    res.json({ sent: true, email_sent: updated.email_sent, sms_sent: updated.sms_sent, sent_at: updated.sent_at });
+  } catch (err) {
+    console.error('POST /promos email failed:', err);
+    res.status(500).json({ error: 'Failed to send email' });
   }
 });
 
