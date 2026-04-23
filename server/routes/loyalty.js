@@ -236,26 +236,49 @@ router.get('/admin/customers', requireAuth, async (req, res) => {
 });
 
 // POST /api/loyalty/admin/reminders/weekly — send weekly reminder emails via SMTP
+// Picks a random template from 4 variations for each customer so the batch
+// doesn't feel like one identical blast.
 router.post('/admin/reminders/weekly', requireAuth, async (req, res) => {
   try {
     const customers = await prisma.customer.findMany({
-      where: { stamps: { gte: 1 } },
       orderBy: { created_at: 'desc' },
     });
 
     if (customers.length === 0) {
-      return res.json({ sent: 0 });
+      return res.json({ sent: 0, failed: 0, total: 0 });
     }
 
+    const templates = [
+      (c) => ({
+        subject: '☕ We miss you at Coffee Christopher!',
+        text: `Hey ${c.first_name},\n\nWe miss seeing your face around here! Stop by this week — your usual is waiting for you. ☕\n\n— Coffee Christopher`,
+      }),
+      (c) => ({
+        subject: '☕ Time for a great cup of coffee',
+        text: `Hey ${c.first_name},\n\nThere's no better time for a great cup of coffee. Come see us this week and let us make your day.\n\n— Coffee Christopher`,
+      }),
+      (c) => ({
+        subject: '☕ Your stamps are building up!',
+        text: `Hey ${c.first_name},\n\nYou've got ${c.stamps} stamp${c.stamps === 1 ? '' : 's'} on your loyalty card — every visit gets you closer to a free drink on us!\n\n— Coffee Christopher`,
+      }),
+      (c) => ({
+        subject: '☕ Come say hi this week',
+        text: `Hey ${c.first_name},\n\nCoffee Christopher wouldn't be the same without regulars like you. Come say hi this week!\n\n— Coffee Christopher`,
+      }),
+    ];
+
     const results = await Promise.allSettled(
-      customers.map((c) =>
-        mailer.sendMail({
+      customers.map((c) => {
+        // Customers with 0 stamps skip the stamp-count template (index 2)
+        const pool = c.stamps > 0 ? templates : templates.filter((_, i) => i !== 2);
+        const pick = pool[Math.floor(Math.random() * pool.length)](c);
+        return mailer.sendMail({
           from: `"Coffee Christopher" <${process.env.SMTP_USER}>`,
           to: c.email,
-          subject: '☕ Your Coffee Christopher stamps are waiting!',
-          text: `Hey ${c.first_name},\n\nJust a friendly reminder that you have ${c.stamps} stamp${c.stamps === 1 ? '' : 's'} on your Coffee Christopher loyalty card. Stop by this week and get one step closer to a free drink!\n\n— Coffee Christopher`,
-        })
-      )
+          subject: pick.subject,
+          text: pick.text,
+        });
+      })
     );
 
     const sent = results.filter((r) => r.status === 'fulfilled').length;
